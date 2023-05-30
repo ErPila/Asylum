@@ -24,16 +24,16 @@ AWeapon* UCombat::GetFromBackPack(int32 index)
 
 }
 
-void UCombat::PutInBackPack(AWeapon* ToInsert)
+void UCombat::RemoveFromBackPack(AWeapon* ToRemove, int32 index)
 {
-	/*if (BackPack.Num() < 5)
+	switch (index)
 	{
-		BackPack.Add(ToInsert);
+	case 0: BackPack.Slot1 = nullptr; break;
+	case 1: BackPack.Slot2 = nullptr; break;
+	case 2: BackPack.Slot3 = nullptr; break;
 	}
-	else
-	{
 
-	}*/
+
 }
 
 // Sets default values for this component's properties
@@ -55,7 +55,7 @@ void UCombat::SetWeaponStateServer_Implementation(EWeaponState NewState, AWeapon
 {
 	UE_LOG(LogTemp, Warning, TEXT("Weapon set on server"));
 
-	ActualW->SetWeaponState(EWeaponState::EWS_Backpack);
+	ActualW->SetWeaponState(NewState);
 }
 
 // Called when the game starts
@@ -67,7 +67,7 @@ void UCombat::BeginPlay()
 
 	
 
-	// tre slot per il backpack
+// tre slot per il backpack
 //	auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
 //	BackupLocation =  HandSocket->RelativeLocation;
 
@@ -95,7 +95,8 @@ void UCombat::EquipWeapon(AWeapon* WeaponToEquip)
 	if (Character->HasAuthority())  UE_LOG(LogTemp, Warning, TEXT("equipping the weapons %s"),*Character->GetName() );
 	
 	    Character->EquippedWeapon = WeaponToEquip;
-		Character->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
+		SetWeaponStateServer(EWeaponState::EWS_Equipment, Character->EquippedWeapon);
+		//Character->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
 
 		auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
 
@@ -106,13 +107,6 @@ void UCombat::EquipWeapon(AWeapon* WeaponToEquip)
 
 		//CollectWeapon(EquippedWeapon); // inserisco arma nell'array
 
-
-
-
-	//EquippedWeapon->SetActorLocation(EquippedWeapon->GetActorLocation() + EquippedWeapon->LocationOffset);
-	//EquippedWeapon->AddActorLocalOffset(EquippedWeapon->LocationOffset);
-	//Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	//Character->bUseControllerRotationYaw = true;
 }
 
 bool UCombat::CollectWeapon(AWeapon* WeaponToCollect)

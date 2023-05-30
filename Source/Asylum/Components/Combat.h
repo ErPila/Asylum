@@ -68,7 +68,7 @@ public:
 	AWeapon* GetFromBackPack(int32 index);
 
 	UFUNCTION(BlueprintCallable)
-	void PutInBackPack(AWeapon* ToInsert);
+	void RemoveFromBackPack(AWeapon* ToRemove, int32 index);
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE float GetHpPercent() { return Actual_Hp / Max_Hp; };
