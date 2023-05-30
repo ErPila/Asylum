@@ -319,7 +319,7 @@ void ABaseChar::Equip_Server_Implementation(AWeapon* Traced)
 {
 	// questa funzione verrà eseguita su richiesta del client
 	// // immediately equip the weapon
-	EquippedWeapon = Traced;
+	//EquippedWeapon = Traced;
 	CombatComponent->EquipWeapon(Traced);
 	//CombatComponent->CollectWeapon(Traced); // put weapon in the backpack
 
@@ -336,11 +336,11 @@ bool ABaseChar::Equip_Server_Validate(AWeapon* Traced)
  //se sono client chiedo al server di eseguirla
 void ABaseChar::Drop_Button(const FInputActionValue& Value) 
 { 
-	if (EquippedWeapon == nullptr) return;
-	if (TracedWeapon && !CombatComponent->BackpackIsFull()) return;
+	if (EquippedWeapon == nullptr || TracedWeapon || !bCanFire) return;
 
 	Drop_Server(); 
-	CombatComponent->SetBackpackIsFull(false);
+	CombatComponent->RemoveFromBackPack(nullptr, CombatComponent->GetBackpackSlot());
+	//CombatComponent->SetBackpackIsFull(false);
 	//CombatComponent->BackPack[CombatComponent->GetBackpackSlot()] = nullptr;
 }
 
@@ -374,28 +374,31 @@ void ABaseChar::Drop_Execute()
 
 void ABaseChar::Slot1_Button(const FInputActionValue& Value)
 {
-	if (bCanFire == false) return;
-	if (EquippedWeapon) EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
+	if (bCanFire == false || !CombatComponent->GetFromBackPack(0)) return;
+	if (EquippedWeapon) CombatComponent->SetWeaponStateServer(EWeaponState::EWS_Backpack, EquippedWeapon);
 	
-	CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot1);
+	Equip_Server(CombatComponent->BackPack.Slot1);
+	//CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot1);
 	CombatComponent->SetBackpackSlot(0);
 }
 
 void ABaseChar::Slot2_Button(const FInputActionValue& Value)
 {
-	if (bCanFire == false) return;
-	if (EquippedWeapon) EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
-
-	CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot2);
+	if (bCanFire == false || !CombatComponent->GetFromBackPack(1)) return;
+	if (EquippedWeapon) CombatComponent->SetWeaponStateServer(EWeaponState::EWS_Backpack, EquippedWeapon);
+	
+	Equip_Server(CombatComponent->BackPack.Slot2);
+	//CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot2);
 	CombatComponent->SetBackpackSlot(1);
 }
 
 void ABaseChar::Slot3_Button(const FInputActionValue& Value)
 {
-	if (bCanFire == false) return;
-	if (EquippedWeapon) EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
+	if (bCanFire == false || !CombatComponent->GetFromBackPack(2)) return;
+	if (EquippedWeapon) CombatComponent->SetWeaponStateServer(EWeaponState::EWS_Backpack, EquippedWeapon);
 
-	CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot3);
+	Equip_Server(CombatComponent->BackPack.Slot3);
+	//CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot3);
 	CombatComponent->SetBackpackSlot(2);
 }
 
@@ -659,6 +662,7 @@ void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
+		UE_LOG(LogTemp, Error, TEXT("Scambio arma"));
 	}
 	else
 	{

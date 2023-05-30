@@ -218,6 +218,9 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 		WeaponMesh->SetVisibility(true);
 		RootSphere->SetSimulatePhysics(false);
 
+		if (!HasAuthority()) UE_LOG(LogTemp, Warning, TEXT("cambio client"))
+		else UE_LOG(LogTemp, Warning, TEXT("cambio server"));
+
 	break;
 
 	case EWeaponState::EWS_Dropped:
