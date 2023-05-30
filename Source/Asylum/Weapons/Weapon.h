@@ -10,16 +10,6 @@
 #include "Sound/SoundCue.h"
 #include "Weapon.generated.h"
 
-UENUM(BlueprintType)
-enum class EWeaponState : uint8
-{
-	EWS_Initial       UMETA(DisplayName = "Initial"),
-	EWS_Equipment     UMETA(DisplayName = "Equipment"),
-	EWS_Dropped       UMETA(DisplayName = "Dropped"),
-	EWS_Interpolation UMETA(DisplayName = "Interpolation"),
-	EWS_Backpack      UMETA(DisplayName = "Backpack"),
-	EWS_MAX           UMETA(DisplayName = "DefaultMAX")
-};
 
 USTRUCT(BlueprintType)
 struct FWeaponTable : public FTableRowBase
@@ -157,8 +147,8 @@ public:
 
 	void SetWeaponState(EWeaponState NewState);
 
-	UFUNCTION(Server,Reliable)
-	void SetWeaponStateServer(EWeaponState NewState);
+	//UFUNCTION(Server,Reliable)
+	//void SetWeaponStateServer(EWeaponState NewState);
 
 
 	void DropTimer();

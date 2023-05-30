@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Asylum/Enum/WeaponType.h"
 #include "Combat.generated.h"
 
 class AWeapon;
@@ -90,8 +91,6 @@ public:
 	void CheckBackpackFull();
 
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	FORCEINLINE int8 GetBackpackSlot() { return BackpackSlot; };
 	
 	FORCEINLINE void SetBackpackSlot(int8 NewVal) { BackpackSlot = NewVal; };
@@ -99,6 +98,10 @@ public:
 	FORCEINLINE bool BackpackIsFull() { return bIsFull; };
 
 	FORCEINLINE void SetBackpackIsFull(bool NewVal) { bIsFull = NewVal; };
+
+	UFUNCTION(Server, Reliable)
+	void SetWeaponStateServer(EWeaponState NewState,AWeapon* ActualW);
+
 
 protected:
 	// Called when the game starts
@@ -108,15 +111,10 @@ private:
 
 	ABaseChar* Character;
 
-	UPROPERTY(replicatedUsing = OnRep_EquipWeapon)
-	AWeapon* EquippedWeapon;
-
 	UPROPERTY(VisibleAnywhere)
 	FBackpack BackPack; // weapons inside the backpack
 
-	
-	UFUNCTION()
-	void OnRep_EquipWeapon(AWeapon* EW);
+
 	
 
 

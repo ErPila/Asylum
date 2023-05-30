@@ -46,11 +46,17 @@ Actual_Sanity(Max_Sanity)
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	//bReplicatesComp = true;
-	SetIsReplicated(true);
 	//bReplicates = true;
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+
+void UCombat::SetWeaponStateServer_Implementation(EWeaponState NewState, AWeapon* ActualW)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Weapon set on server"));
+
+	ActualW->SetWeaponState(EWeaponState::EWS_Backpack);
+}
 
 // Called when the game starts
 void UCombat::BeginPlay()
@@ -64,15 +70,6 @@ void UCombat::BeginPlay()
 	// tre slot per il backpack
 //	auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
 //	BackupLocation =  HandSocket->RelativeLocation;
-
-}
-
-void UCombat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ThisClass, EquippedWeapon); // replica sempre la variabile
-	//DOREPLIFETIME(ThisClass, BackPack);
-	//DOREPLIFETIME_CONDITION(ThisClass, EquippedWeapon, COND_OwnerOnly);
 
 }
 
@@ -97,14 +94,14 @@ void UCombat::EquipWeapon(AWeapon* WeaponToEquip)
 	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("OnReplication"));
 	if (Character->HasAuthority())  UE_LOG(LogTemp, Warning, TEXT("equipping the weapons %s"),*Character->GetName() );
 	
-      	EquippedWeapon = WeaponToEquip;
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
+	    Character->EquippedWeapon = WeaponToEquip;
+		Character->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
 
 		auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
 
 		if (HandSocket)
 		{
-			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+			HandSocket->AttachActor(Character->EquippedWeapon, Character->GetMesh());
 		}
 
 		//CollectWeapon(EquippedWeapon); // inserisco arma nell'array
@@ -130,12 +127,11 @@ bool UCombat::CollectWeapon(AWeapon* WeaponToCollect)
 	else    return false;
 
 	
-	if (EquippedWeapon) // ho già un arma equipaggiata
+	if (Character->EquippedWeapon) // ho già un arma equipaggiata
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Vai nel Backpack"));
 
-		WeaponToCollect->SetWeaponStateServer(EWeaponState::EWS_Backpack);
-
+		SetWeaponStateServer(EWeaponState::EWS_Backpack, WeaponToCollect);
 	}
 	else
 	{
@@ -164,36 +160,6 @@ void UCombat::CheckBackpackFull()
 	bIsFull = true;*/
 }
 
-
-// on rep viene eseguito su tutti i client ma non sul server
-void UCombat::OnRep_EquipWeapon(AWeapon* EW)
-{
-	UE_LOG(LogTemp, Warning, TEXT("On rep Equip"));
-	
-	if(EquippedWeapon)
-	{
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
-	}
-	else
-	{
-		if (EW)
-		{
-			Character->bCanFire = true;
-			EW->SetWeaponState(EWeaponState::EWS_Dropped);
-
-			if (EW->GetRootSphere()->IsSimulatingPhysics())
-			{
-				EW->GetRootSphere()->AddImpulse(Character->GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
-			}
-			else
-			{
-				//EW->GetRootSphere()->SetSimulatePhysics(true);
-				//EW->GetRootSphere()->AddImpulse(Character->GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
-			}
-
-		}
-	}
-}
 
 
 

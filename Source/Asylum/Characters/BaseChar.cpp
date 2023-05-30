@@ -33,6 +33,7 @@ void ABaseChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass, SelectedMesh); // replica sempre la variabile
+	DOREPLIFETIME(ThisClass, EquippedWeapon);
 	//DOREPLIFETIME(ThisClass, TracedWeapon);
 //	DOREPLIFETIME_CONDITION(ThisClass, SelectedMesh, COND_OwnerOnly); // replica sempre la variabile
 }
@@ -55,7 +56,6 @@ ABaseChar::ABaseChar():
 	CameraComponent->bUsePawnControlRotation = false;	// la camera segue lo spring arm
 
 	CombatComponent = CreateDefaultSubobject<UCombat>(TEXT("CombatComponent"));
-	CombatComponent->SetIsReplicated(true);	// nel caso di nostri componenti specifico il fatto che vadano replicati
 	CombatComponent->Character = this;
 
 	bUseControllerRotationYaw = false;	// il personaggio non ruota con la camera
@@ -65,18 +65,17 @@ ABaseChar::ABaseChar():
 	DebugWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
 	DebugWidget->SetupAttachment(RootComponent);
 
-
 	
 }
 
 AWeapon* ABaseChar::GetEquippedWeapon()
 {
-	return CombatComponent->EquippedWeapon;
+	return EquippedWeapon;
 }
 
 bool ABaseChar::IsEquipped()
 {
-	return CombatComponent->EquippedWeapon ? true : false;
+	return EquippedWeapon ? true : false;
 }
 
 // Called when the game starts or when spawned
@@ -192,7 +191,7 @@ void ABaseChar::Attack_Execute()
 
 	if (!bCanFire)  return;
 
-	auto wep{ CombatComponent->EquippedWeapon };
+	auto wep{ EquippedWeapon };
 
 	bool bRandAnim{ false };
 
@@ -320,7 +319,7 @@ void ABaseChar::Equip_Server_Implementation(AWeapon* Traced)
 {
 	// questa funzione verrà eseguita su richiesta del client
 	// // immediately equip the weapon
-	CombatComponent->EquippedWeapon = Traced;
+	EquippedWeapon = Traced;
 	CombatComponent->EquipWeapon(Traced);
 	//CombatComponent->CollectWeapon(Traced); // put weapon in the backpack
 
@@ -337,7 +336,7 @@ bool ABaseChar::Equip_Server_Validate(AWeapon* Traced)
  //se sono client chiedo al server di eseguirla
 void ABaseChar::Drop_Button(const FInputActionValue& Value) 
 { 
-	if (CombatComponent->EquippedWeapon == nullptr) return;
+	if (EquippedWeapon == nullptr) return;
 	if (TracedWeapon && !CombatComponent->BackpackIsFull()) return;
 
 	Drop_Server(); 
@@ -358,7 +357,7 @@ void ABaseChar::Drop_Execute()
 {
 	if (!bCanFire)  return;
 
-	if (CombatComponent->EquippedWeapon)
+	if (EquippedWeapon)
 	{
 		if (DropWeaponMontage)
 		{
@@ -367,7 +366,7 @@ void ABaseChar::Drop_Execute()
 			auto MyAnim = GetMesh()->GetAnimInstance();
 			MyAnim->Montage_Play(DropWeaponMontage);
 
-			UE_LOG(LogTemp, Warning, TEXT(" Sto per animare %s"), *CombatComponent->EquippedWeapon->GetName());
+			UE_LOG(LogTemp, Warning, TEXT(" Sto per animare %s"), *EquippedWeapon->GetName());
 
 		}
 	}
@@ -376,7 +375,7 @@ void ABaseChar::Drop_Execute()
 void ABaseChar::Slot1_Button(const FInputActionValue& Value)
 {
 	if (bCanFire == false) return;
-	if (CombatComponent->EquippedWeapon) CombatComponent->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
+	if (EquippedWeapon) EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
 	
 	CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot1);
 	CombatComponent->SetBackpackSlot(0);
@@ -385,7 +384,7 @@ void ABaseChar::Slot1_Button(const FInputActionValue& Value)
 void ABaseChar::Slot2_Button(const FInputActionValue& Value)
 {
 	if (bCanFire == false) return;
-	if (CombatComponent->EquippedWeapon) CombatComponent->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
+	if (EquippedWeapon) EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
 
 	CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot2);
 	CombatComponent->SetBackpackSlot(1);
@@ -394,7 +393,7 @@ void ABaseChar::Slot2_Button(const FInputActionValue& Value)
 void ABaseChar::Slot3_Button(const FInputActionValue& Value)
 {
 	if (bCanFire == false) return;
-	if (CombatComponent->EquippedWeapon) CombatComponent->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
+	if (EquippedWeapon) EquippedWeapon->SetWeaponState(EWeaponState::EWS_Backpack);
 
 	CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot3);
 	CombatComponent->SetBackpackSlot(2);
@@ -437,9 +436,9 @@ void ABaseChar::ServerThrow_Implementation()	// avviene per la copia del persona
 
 	}
 
-	if (CombatComponent->EquippedWeapon)
+	if (EquippedWeapon)
 	{
-		auto EW = CombatComponent->EquippedWeapon;
+		auto EW = EquippedWeapon;
 
 		EW->SetWeaponState(EWeaponState::EWS_Dropped);
 
@@ -448,7 +447,7 @@ void ABaseChar::ServerThrow_Implementation()	// avviene per la copia del persona
 			EW->GetRootSphere()->AddImpulse(GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
 		}
 		
-		CombatComponent->EquippedWeapon = nullptr;
+		EquippedWeapon = nullptr;
 	}
 
 	//GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -651,6 +650,39 @@ void ABaseChar::OnRep_TracedWeapon(AWeapon* PrevTracedWeapon)
 	}
 }
 */
+
+// on rep viene eseguito su tutti i client ma non sul server
+void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
+{
+	UE_LOG(LogTemp, Warning, TEXT("On rep Equip"));
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
+	}
+	else
+	{
+		if (EW)
+		{
+			bCanFire = true;
+			EW->SetWeaponState(EWeaponState::EWS_Dropped);
+
+			if (EW->GetRootSphere()->IsSimulatingPhysics())
+			{
+				EW->GetRootSphere()->AddImpulse(GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
+			}
+			else
+			{
+				//EW->GetRootSphere()->SetSimulatePhysics(true);
+				//EW->GetRootSphere()->AddImpulse(Character->GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
+			}
+
+		}
+	}
+}
+
+
+
 
 UCombat* ABaseChar::GetCombat()
 {

@@ -269,12 +269,13 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 	}
 }
 
+/*
 void AWeapon::SetWeaponStateServer_Implementation(EWeaponState NewState)
 {
 	SetWeaponState(NewState);
 	UE_LOG(LogTemp, Warning, TEXT("Weapon set on server")); 
 }
-
+*/
 
 
 

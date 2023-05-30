@@ -88,7 +88,15 @@ class ASYLUM_API ABaseChar : public ACharacter
 	// lo stato stand prevede l'utilizzo dell' aim offset gli altri dell'animazione di turn
 	ETurnState TurnState{ ETurnState::ETS_Stand };
 
+	UPROPERTY(replicatedUsing = OnRep_EquipWeapon)
+	AWeapon* EquippedWeapon;
+
+
 public:
+
+
+	UFUNCTION()
+	void OnRep_EquipWeapon(AWeapon* EW);
 
 	UFUNCTION(BlueprintPure)
 	UCombat* GetCombat();
