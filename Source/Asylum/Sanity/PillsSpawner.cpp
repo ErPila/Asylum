@@ -5,6 +5,9 @@
 #include "Components/BoxComponent.h"
 #include "Asylum/Sanity/Pills.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
 
 
 
@@ -12,7 +15,7 @@
 APillsSpawner::APillsSpawner()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	AreaSpawn = CreateDefaultSubobject<UBoxComponent>(TEXT("AreaSpawn"));
 	RootComponent = AreaSpawn;
 }
@@ -24,10 +27,10 @@ void APillsSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < MaxPills; i++)
 	{
 		SpawnObj();
-		Pillole++;
+		
 	}
 	
 	
@@ -37,7 +40,32 @@ void APillsSpawner::SpawnObj()
 {
 	if (Kind)
 	{
-		GetWorld()->SpawnActor<AActor>(Kind, FindPoint(), FRotator(0, 0, 0));
+		Pillole++;
+
+		auto point{ FindPoint() };
+
+		auto mypill{ GetWorld()->SpawnActor<AActor>(Kind,point , FRotator(0, 0, 0)) };
+		
+		
+		/*UNiagaraFunctionLibrary::SpawnSystemAttached(
+			VFX_Pills,
+			mypill->GetRootComponent(),
+			NAME_None,
+			mypill->GetActorLocation(),
+			mypill->GetActorRotation(),
+			EAttachLocation::SnapToTarget,
+			false
+		);*/
+		
+		
+		
+		
+		
+
+		//UE_LOG(LogTemp, Error, TEXT("%s")*mypill->GetActorLocation().ToString());
+
+		mypill->SetOwner(this);
+
 	}
 }
 
@@ -47,15 +75,47 @@ void APillsSpawner::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (Pillole < 2)
 	{
+		
 		SpawnObj();
 	}
 
+}
+
+bool APillsSpawner::VerifySphere(FVector NewLoc)
+{
+	FHitResult Hit;
+	FQuat Rot{ FRotator(0).Quaternion() };
+
+	bool Found = GetWorld()->SweepSingleByChannel(Hit, NewLoc,
+		NewLoc + FVector(0, 0, 1),
+		Rot,
+		ECC_Visibility,
+		FCollisionShape::MakeSphere(20.f));
+
+
+	UE_LOG(LogTemp, Error, TEXT("Verifico") );
+
+
+	return Found;
 }
 
 FVector APillsSpawner::FindPoint()
 {
 	FVector Estensione = AreaSpawn->Bounds.BoxExtent;
 	FVector Origine = AreaSpawn->Bounds.Origin;
-	return UKismetMathLibrary::RandomPointInBoundingBox(Origine, Estensione);
+	FVector PuntoRandom; 
+	
+		do {
+
+			//trovo un punto random
+			PuntoRandom = UKismetMathLibrary::RandomPointInBoundingBox(Origine, Estensione);
+	
+
+		} while (VerifySphere(PuntoRandom));// se fa collisione continuo a rientrarci dentro
+
+
+	return PuntoRandom;
+
+
 }
 

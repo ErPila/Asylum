@@ -139,6 +139,20 @@ void ABaseChar::OnRep_ChangeMesh()
 	GetMesh()->SetSkeletalMesh(CharMeshes[SelectedMesh]);
 }
 
+void ABaseChar::CollectPills()
+{
+	if (CombatComponent)
+	{
+		CombatComponent->Actual_Sanity += 15;
+
+		if (CombatComponent->Actual_Sanity > CombatComponent->Max_Sanity)
+		{
+			CombatComponent->Actual_Sanity = CombatComponent->Max_Sanity;
+		}
+	}
+	
+}
+
 
 
 

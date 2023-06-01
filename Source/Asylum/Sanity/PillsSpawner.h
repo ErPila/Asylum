@@ -27,17 +27,24 @@ public:
 	UPROPERTY(EditAnyWhere, Category = "Spawn")
 		TSubclassOf<class APills> Kind;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Pillole")
-		int Pillole{ 0 };
+	UPROPERTY( BlueprintReadWrite, Category = "Pillole")
+	int Pillole { 0 };
+
+	UPROPERTY(EditAnyWhere, Category = "Pillole")
+		int MaxPills{ 2 };
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable, Category = "Pillole")
 	void SpawnObj();
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	bool VerifySphere(FVector NewLoc);
+
 
 };

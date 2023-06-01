@@ -54,6 +54,8 @@ class ASYLUM_API ABaseChar : public ACharacter
 	//UPROPERTY(ReplicatedUsing = OnRep_TracedWeapon)
 	AWeapon* TracedWeapon;
 
+	UFUNCTION(BlueprintCallable,Category = "Sanity")
+	void CollectPills();
 	//UFUNCTION()
 	//void OnRep_TracedWeapon(AWeapon* PrevTracedWeapon);
 
