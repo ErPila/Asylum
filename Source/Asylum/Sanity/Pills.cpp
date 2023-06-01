@@ -31,9 +31,10 @@ void APills::BeginPlay()
 void APills::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-
-	MySystem->DestroyComponent();
-
+	if (MySystem)
+	{
+		MySystem->DestroyComponent();
+	}
 }
 
 // Called every frame
