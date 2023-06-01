@@ -136,13 +136,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponType(uint8 RandMax);
 
+	UFUNCTION(BlueprintPure)
+	EWeaponState GetWeaponState() { return WeaponState; };
+
 	UAnimMontage* GetWepMontage() { return WepMontage; }
 
 	// Sets default values for this actor's properties
 	AWeapon();
 
-	EWeaponType GetWeaponType() { return WeaponType; };
-	float       GetFireRate()   { return FireRate; };
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EWeaponType GetWeaponType() { return WeaponType; };
+
+	float GetFireRate()   { return FireRate; };
 
 
 	void SetWeaponState(EWeaponState NewState);
@@ -180,4 +185,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintPure)
+	UWidgetComponent* GetWidgetPickUp() { return PickupWidget; };
 };

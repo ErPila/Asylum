@@ -161,8 +161,6 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 
 
-
-
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
@@ -175,10 +173,6 @@ void AWeapon::BeginPlay()
 	CollisionSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	CollisionSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
-
-
-
-
 
 
 void AWeapon::SetWeaponState(EWeaponState NewState)
@@ -196,7 +190,7 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 
 		if (!HasAuthority()) UE_LOG(LogTemp, Warning, TEXT("Back to initial state on the client"));
 
-		ShowWidget(true);
+		ShowWidget(false);
 		CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 		WeaponMesh->SetSimulatePhysics(false);
