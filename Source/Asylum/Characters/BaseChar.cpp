@@ -633,40 +633,22 @@ bool ABaseChar::ItemTrace(FHitResult& OutHit)
 void ABaseChar::SetTracedWeapon(AWeapon* NewWeapon)
 {
 
-//	if (IsLocallyControlled())
-//	{
-		if (!NewWeapon && TracedWeapon)
-		{
-			TracedWeapon->ShowWidget(false);
-			TracedWeapon->GetMesh()->SetRenderCustomDepth(false);
-		}
+	if ((!NewWeapon || NewWeapon != TracedWeapon) && TracedWeapon)
+	{
+		TracedWeapon->ShowWidget(false);
+		TracedWeapon->GetMesh()->SetRenderCustomDepth(false);
+	}
 
-		TracedWeapon = NewWeapon;
+	TracedWeapon = NewWeapon;
 
-		if (TracedWeapon)
-		{
-			TracedWeapon->ShowWidget(true); // il nuovo valore è
-			TracedWeapon->GetMesh()->SetRenderCustomDepth(true);
-		}
-		//valido e mostro widget
-	//}
-}
-
-/*
-void ABaseChar::OnRep_TracedWeapon(AWeapon* PrevTracedWeapon)
-{
 	if (TracedWeapon)
 	{
 		TracedWeapon->ShowWidget(true); // il nuovo valore è
 		TracedWeapon->GetMesh()->SetRenderCustomDepth(true);
 	}
-	else
-	{
-		PrevTracedWeapon->ShowWidget(false);
-		PrevTracedWeapon->GetMesh()->SetRenderCustomDepth(false);
-	}
+
 }
-*/
+
 
 // on rep viene eseguito su tutti i client ma non sul server
 void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
