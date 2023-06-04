@@ -75,7 +75,7 @@ void APillsSpawner::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (Pillole < 2)
 	{
-		
+
 		SpawnObj();
 	}
 
@@ -91,6 +91,8 @@ bool APillsSpawner::VerifySphere(FVector NewLoc)
 		Rot,
 		ECC_Visibility,
 		FCollisionShape::MakeSphere(20.f));
+
+	DrawDebugSphere(GetWorld(), NewLoc,  20.f, 8, (Found ? FColor::Green : FColor::Red), true, 5.f);
 
 
 	UE_LOG(LogTemp, Error, TEXT("Verifico") );
