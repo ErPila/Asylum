@@ -57,9 +57,16 @@ class ASYLUM_API UCombat : public UActorComponent
 
 	bool bIsFull{ false };
 
-
 	ABaseChar* MyChar{ nullptr };
+
+	
+
 public:	
+
+	void ReceiveDamage(float Damage);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ReceiveDamage_Multicast(float Damage);
 
 	FORCEINLINE float GetStandWalkSpeed() { return StandWalkSpeed; };
 	FORCEINLINE float GetCrouchWalkSpeed() { return CrouchWalkSpeed; };
@@ -74,6 +81,8 @@ public:
 	FORCEINLINE float GetHpPercent() { return Actual_Hp / Max_Hp; };
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE float GetSanityPercent() { return Actual_Sanity / Max_Sanity; };
+
+
 
 	// Sets default values for this component's properties
 	UCombat();

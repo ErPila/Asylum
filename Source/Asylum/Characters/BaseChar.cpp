@@ -380,6 +380,8 @@ void ABaseChar::Drop_Execute()
 			auto MyAnim = GetMesh()->GetAnimInstance();
 			MyAnim->Montage_Play(DropWeaponMontage);
 
+			EquippedWeapon->SetOwner(nullptr);
+
 			UE_LOG(LogTemp, Warning, TEXT(" Sto per animare %s"), *EquippedWeapon->GetName());
 
 		}

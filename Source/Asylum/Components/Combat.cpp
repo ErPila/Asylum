@@ -11,6 +11,17 @@
 
 
 
+void UCombat::ReceiveDamage(float Damage)
+{
+	Actual_Hp -= Damage;
+	ReceiveDamage_Multicast(Damage);
+}
+
+void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
+{
+	Actual_Hp -= Damage;
+}
+
 AWeapon* UCombat::GetFromBackPack(int32 index)
 {
 
@@ -92,20 +103,22 @@ void UCombat::EquipWeapon(AWeapon* WeaponToEquip)
 	if (!Character || !WeaponToEquip) return;	// se manca uno dei due elementi indispensalibi, esco
 
 	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("OnReplication"));
-	if (Character->HasAuthority())  UE_LOG(LogTemp, Warning, TEXT("equipping the weapons %s"),*Character->GetName() );
+	if (Character->HasAuthority())  UE_LOG(LogTemp, Warning, TEXT("equipping the weapons %s"), *Character->GetName());
+
 	
-	    Character->EquippedWeapon = WeaponToEquip;
-		SetWeaponStateServer(EWeaponState::EWS_Equipment, Character->EquippedWeapon);
-		//Character->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
+	Character->EquippedWeapon = WeaponToEquip;
+	SetWeaponStateServer(EWeaponState::EWS_Equipment, Character->EquippedWeapon);
+	//Character->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
 
-		auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
+	auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
 
-		if (HandSocket)
-		{
-			HandSocket->AttachActor(Character->EquippedWeapon, Character->GetMesh());
-		}
+	if (HandSocket)
+	{
+		HandSocket->AttachActor(Character->EquippedWeapon, Character->GetMesh());
+	}
 
-		//CollectWeapon(EquippedWeapon); // inserisco arma nell'array
+	Character->EquippedWeapon->SetOwner(Character);
+	//CollectWeapon(EquippedWeapon); // inserisco arma nell'array
 
 }
 

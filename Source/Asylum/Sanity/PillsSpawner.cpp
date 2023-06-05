@@ -87,7 +87,7 @@ bool APillsSpawner::VerifySphere(FVector NewLoc)
 	FQuat Rot{ FRotator(0).Quaternion() };
 
 	bool Found = GetWorld()->SweepSingleByChannel(Hit, NewLoc,
-		NewLoc + FVector(0, 0, 1),
+		NewLoc + FVector(0, 0, 100),
 		Rot,
 		ECC_Visibility,
 		FCollisionShape::MakeSphere(20.f));

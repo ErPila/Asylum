@@ -4,6 +4,7 @@
 #include "Weapon.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Asylum/Components/Combat.h"
 #include "Net/UnrealNetwork.h"
 #include "Asylum/Characters/BaseChar.h"
 #include "NiagaraFunctionLibrary.h"
@@ -39,7 +40,7 @@ void AWeapon::SetWeaponType(uint8 RandMax)
 AWeapon::AWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;	// setta che questa classe deve essere replicata
 
 	RootSphere = CreateDefaultSubobject<USphereComponent>(TEXT("RootSphere"));
@@ -63,7 +64,51 @@ AWeapon::AWeapon()
 	PickupWidget->SetupAttachment(RootComponent);
 
 }
+void AWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 
+	if (bCanAttack)
+	{
+		if(HasAuthority())
+		{
+			FHitResult Hit;
+
+			FTransform StartTrace = WeaponMesh->GetSocketTransform(FName("DamageStartSocket"), RTS_World);
+			FTransform EndTrace = WeaponMesh->GetSocketTransform(FName("DamageEndSocket"), RTS_World);
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
+			Params.AddIgnoredActor(GetOwner());
+
+			GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
+
+			auto Player = Cast<ABaseChar>(Hit.GetActor());
+
+			if (Player)
+			{
+				UE_LOG(LogTemp, Error, TEXT("THO COLPITO"));
+				
+
+				DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
+
+				Player->GetCombat()->ReceiveDamage(Damage);
+			}
+
+			DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
+		}
+
+	}
+}
+
+void AWeapon::Attack_Server_Implementation()
+{
+	Attack_Multicast();
+}
+
+void AWeapon::Attack_Multicast_Implementation()
+{
+
+}
 /*
 void AWeapon::OnConstruction(const FTransform& Transform)
 {
@@ -273,6 +318,8 @@ void AWeapon::SetWeaponStateServer_Implementation(EWeaponState NewState)
 	UE_LOG(LogTemp, Warning, TEXT("Weapon set on server")); 
 }
 */
+
+
 
 
 

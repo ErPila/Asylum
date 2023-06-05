@@ -122,12 +122,22 @@ private:
 	UPROPERTY(VisibleAnyWhere,Category = "Montage")
 	UAnimMontage* WepMontage;
 
+
+	bool bCanAttack{ false };
+
+	UFUNCTION(Server, Reliable)
+	void Attack_Server();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Attack_Multicast();
+
 public:	
 
 	UFUNCTION()
 	void OnRep_WeaponState(EWeaponState OldState);
 
-
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetCanAttack(bool NewVal) { bCanAttack = NewVal; };
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	UTexture2D* Icon;
@@ -143,6 +153,8 @@ public:
 
 	// Sets default values for this actor's properties
 	AWeapon();
+
+	void Tick(float DeltaTime);
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EWeaponType GetWeaponType() { return WeaponType; };

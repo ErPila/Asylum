@@ -96,6 +96,8 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 public:
 
+	
+	
 
 	UFUNCTION()
 	void OnRep_EquipWeapon(AWeapon* EW);
@@ -116,6 +118,7 @@ public:
 
 	bool GetIsCrouched(){ return bIsCrouched; };
 
+	UFUNCTION(BlueprintPure)
 	AWeapon* GetEquippedWeapon();
 
 	// Sets default values for this character's properties
