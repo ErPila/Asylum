@@ -30,6 +30,11 @@ void AWeapon::SetWeaponType(uint8 RandMax)
 	WeaponType = EWeaponType::EWT_Axe;
 	break;
 
+	case 3:
+		WeaponType = EWeaponType::EWT_Pipe;
+	break;
+
+	
 
 	}
 
