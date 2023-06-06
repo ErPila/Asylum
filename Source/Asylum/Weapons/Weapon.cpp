@@ -27,7 +27,7 @@ void AWeapon::SetWeaponType(uint8 RandMax)
 	break;
 
 	case 2:
-	WeaponType = EWeaponType::EWT_Gun;
+	WeaponType = EWeaponType::EWT_Axe;
 	break;
 
 
@@ -85,12 +85,11 @@ void AWeapon::Tick(float DeltaTime)
 			auto Player = Cast<ABaseChar>(Hit.GetActor());
 
 			if (Player)
-			{
-				UE_LOG(LogTemp, Error, TEXT("THO COLPITO"));
-				
-
+			{				
+				bCanAttack = false;
 				DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
+				Player->Damage = Damage;
 				Player->GetCombat()->ReceiveDamage(Damage);
 			}
 
@@ -188,6 +187,7 @@ void AWeapon::SetWeaponData()
 			WeaponMesh->SetSkeletalMesh(Mesh);
 			WeaponMesh->SetRelativeLocation(TypeRow->DTLocationOffset);
 			WeaponMesh->SetRelativeRotation(TypeRow->DTRotationOffset);
+			WeaponMesh->SetRelativeScale3D(TypeRow->DTScaleOffset);
 
 			WeaponMesh->SetCustomDepthStencilValue(TypeRow->DTCustomStencil);
 

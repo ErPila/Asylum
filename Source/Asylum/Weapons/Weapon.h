@@ -35,7 +35,7 @@ struct FWeaponTable : public FTableRowBase
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	float DTDamage{ 0.f };
+	uint8 DTDamage{ 0 };
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
     float DTFireRate{ 0.f };
@@ -66,6 +66,11 @@ struct FWeaponTable : public FTableRowBase
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	FRotator DTRotationOffset {
 		FRotator(0)
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		FVector DTScaleOffset {
+		FVector(1)
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
@@ -112,7 +117,7 @@ private:
 	USoundCue* PickupSound;
 	USoundCue* UseSound;
 	USoundCue* HitSound;
-	float Damage;
+	uint8 Damage;
 	float FireRate{ 0.f };
 	int32 Ammo;
 	USkeletalMesh*  Mesh;
