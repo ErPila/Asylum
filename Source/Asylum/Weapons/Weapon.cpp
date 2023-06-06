@@ -189,6 +189,8 @@ void AWeapon::SetWeaponData()
 			WeaponMesh->SetRelativeRotation(TypeRow->DTRotationOffset);
 			WeaponMesh->SetRelativeScale3D(TypeRow->DTScaleOffset);
 
+			CollisionSphere->SetRelativeScale3D(FVector(1) / TypeRow->DTScaleOffset);
+
 			WeaponMesh->SetCustomDepthStencilValue(TypeRow->DTCustomStencil);
 
 			WepMontage = TypeRow->DTMontage;
