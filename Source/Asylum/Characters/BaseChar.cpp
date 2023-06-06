@@ -34,6 +34,7 @@ void ABaseChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass, SelectedMesh); // replica sempre la variabile
 	DOREPLIFETIME(ThisClass, EquippedWeapon);
+	DOREPLIFETIME(ThisClass, Damage);
 	//DOREPLIFETIME(ThisClass, TracedWeapon);
 //	DOREPLIFETIME_CONDITION(ThisClass, SelectedMesh, COND_OwnerOnly); // replica sempre la variabile
 }
@@ -652,15 +653,21 @@ void ABaseChar::SetTracedWeapon(AWeapon* NewWeapon)
 }
 
 
+void ABaseChar::OnRep_Damage(uint8 PrevDamage)
+{
+	GetCombat()->Actual_Hp -= Damage;
+	UE_LOG(LogTemp, Warning, TEXT("On Rep Damage"));
+}
+
 // on rep viene eseguito su tutti i client ma non sul server
 void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On rep Equip"));
+	//UE_LOG(LogTemp, Warning, TEXT("On rep Equip"));
 
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
-		UE_LOG(LogTemp, Error, TEXT("Scambio arma"));
+		//UE_LOG(LogTemp, Error, TEXT("Scambio arma"));
 	}
 	else
 	{

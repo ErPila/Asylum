@@ -96,8 +96,11 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 public:
 
+	UPROPERTY(replicatedUsing = OnRep_Damage)
+	uint8 Damage { 0 };
 	
-	
+	UFUNCTION()
+	void OnRep_Damage(uint8 PrevDamage);
 
 	UFUNCTION()
 	void OnRep_EquipWeapon(AWeapon* EW);
