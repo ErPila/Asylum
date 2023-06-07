@@ -130,12 +130,6 @@ private:
 
 	bool bCanAttack{ false };
 
-	UFUNCTION(Server, Reliable)
-	void Attack_Server();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Attack_Multicast();
-
 public:	
 
 	UFUNCTION()

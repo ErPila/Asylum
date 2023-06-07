@@ -90,29 +90,32 @@ void AWeapon::Tick(float DeltaTime)
 			auto Player = Cast<ABaseChar>(Hit.GetActor());
 
 			if (Player)
-			{				
+			{		
+				// se colpisco un character imposto il bcanattack a false 
+				// così interrompo il trace e applico una volta il danno
 				bCanAttack = false;
-				DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
+				//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
+
+				// se ho inserito il sistema particellari lo spawno sul punto di impatto
+				if(HitParticle)
+				{
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitParticle, Hit.Location, FRotator(0));
+				}
+				// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
 				Player->Damage = Damage;
+				
+				// funzione per applicare il danno se siamo il server
 				Player->GetCombat()->ReceiveDamage(Damage);
 			}
 
-			DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
+			
+			//DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
 		}
 
 	}
 }
 
-void AWeapon::Attack_Server_Implementation()
-{
-	Attack_Multicast();
-}
-
-void AWeapon::Attack_Multicast_Implementation()
-{
-
-}
 /*
 void AWeapon::OnConstruction(const FTransform& Transform)
 {
