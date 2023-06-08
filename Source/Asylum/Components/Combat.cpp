@@ -64,7 +64,6 @@ Actual_Sanity(Max_Sanity)
 
 void UCombat::SetWeaponStateServer_Implementation(EWeaponState NewState, AWeapon* ActualW)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Weapon set on server"));
 
 	ActualW->SetWeaponState(NewState);
 }
@@ -108,7 +107,6 @@ void UCombat::EquipWeapon(AWeapon* WeaponToEquip)
 	
 	Character->EquippedWeapon = WeaponToEquip;
 	SetWeaponStateServer(EWeaponState::EWS_Equipment, Character->EquippedWeapon);
-	//Character->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
 
 	auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
 

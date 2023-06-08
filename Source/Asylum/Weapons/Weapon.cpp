@@ -8,6 +8,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Asylum/Characters/BaseChar.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 
 
@@ -31,7 +33,15 @@ void AWeapon::SetWeaponType(uint8 RandMax)
 	break;
 
 	case 3:
-		WeaponType = EWeaponType::EWT_Pipe;
+	WeaponType = EWeaponType::EWT_Pipe;
+	break;
+
+	case 4:
+	WeaponType = EWeaponType::EWT_Scissors;
+	break;
+
+	case 5:
+	WeaponType = EWeaponType::EWT_Knife;
 	break;
 
 	
@@ -98,10 +108,8 @@ void AWeapon::Tick(float DeltaTime)
 				//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
 				// se ho inserito il sistema particellari lo spawno sul punto di impatto
-				if(HitParticle)
-				{
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitParticle, Hit.Location, FRotator(0));
-				}
+				//SpawnSoundParticle(Hit.Location, HitParticle, HitSound);
+
 				// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
 				Player->Damage = Damage;
 				
@@ -222,6 +230,8 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 	SetWeaponData();
 	ShowWidget(false);
+	
+	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereBeginOverlap);
 
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);	// tutti i canali in block
@@ -243,7 +253,7 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 	case EWeaponState::EWS_Initial:
 
 
-		if (!HasAuthority()) UE_LOG(LogTemp, Warning, TEXT("Back to initial state on the client"));
+		//if (!HasAuthority()) UE_LOG(LogTemp, Warning, TEXT("Back to initial state on the client"));
 
 		ShowWidget(false);
 		CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -267,8 +277,8 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 		WeaponMesh->SetVisibility(true);
 		RootSphere->SetSimulatePhysics(false);
 
-		if (!HasAuthority()) UE_LOG(LogTemp, Warning, TEXT("cambio client"))
-		else UE_LOG(LogTemp, Warning, TEXT("cambio server"));
+		//if (!HasAuthority()) UE_LOG(LogTemp, Warning, TEXT("cambio client"))
+		//else UE_LOG(LogTemp, Warning, TEXT("cambio server"));
 
 	break;
 
@@ -289,7 +299,8 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 		RootSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);	// ignora il pawn
 		RootSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-		UE_LOG(LogTemp, Error, TEXT("Ri Attivo la fisica "));
+
+		//UE_LOG(LogTemp, Error, TEXT("Ri Attivo la fisica "));
 
 		if(HasAuthority()) GetWorldTimerManager().SetTimer(Time, this, &AWeapon::DropTimer, 2.5f);
 
@@ -333,9 +344,23 @@ void AWeapon::SetWeaponStateServer_Implementation(EWeaponState NewState)
 
 
 
+void AWeapon::SpawnSoundParticle_Implementation(FVector Position, UNiagaraSystem* Particle, USoundCue* Sound)
+{
+
+	if (Sound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound, Position);
+	}
+
+	if (Particle)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Particle, Position);
+	}
+}
+
 void AWeapon::OnRep_WeaponState(EWeaponState OldState)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Weapon set on replicate"));
+	//UE_LOG(LogTemp, Warning, TEXT("Weapon set on replicate"));
 	SetWeaponState(WeaponState);
 
 }
@@ -356,6 +381,22 @@ void AWeapon::ShowWidget(bool Visibility)
 
 void AWeapon::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	/*
+	if (WeaponState == EWeaponState::EWS_Dropped)
+	{
+		auto Player = Cast<ABaseChar>(OtherActor);
+
+		if (Player)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Colpito il giocatore"));
+			// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
+			Player->Damage = 2;
+
+			// funzione per applicare il danno se siamo il server
+			Player->GetCombat()->ReceiveDamage(2);
+		}
+	}
+	*/
 	
 }
 
