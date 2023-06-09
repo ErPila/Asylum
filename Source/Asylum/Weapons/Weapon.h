@@ -130,6 +130,9 @@ private:
 
 	bool bCanAttack{ false };
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void SpawnSoundParticle(FVector Position, UNiagaraSystem* Particle = nullptr, USoundCue* Sound = nullptr);
+
 public:	
 
 	UFUNCTION()

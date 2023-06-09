@@ -224,10 +224,13 @@ void ABaseChar::Attack_Execute()
 		GetCharacterMovement()->MaxWalkSpeed = 0;
 		break;
 
-		case EWeaponType::EWT_Club:
 		case EWeaponType::EWT_Knife:
 		case EWeaponType::EWT_Scissors:
-     	case EWeaponType::EWT_Syringe:
+		case EWeaponType::EWT_Syringe:
+		GetCharacterMovement()->MaxWalkSpeed = 250;
+		break;
+
+		case EWeaponType::EWT_Club:
 		GetCharacterMovement()->MaxWalkSpeed = 200;
 		bRandAnim = true;
 		break;
