@@ -43,6 +43,9 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combact", meta = (AllowPrivateAccess = "true"))
 	UCombat* CombatComponent{ nullptr };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combact", meta = (AllowPrivateAccess = "true"))
+	AActor* Torcia{ nullptr };
+
 	// variabile replicata legata ad una funzione
 	// ogni volta che tale variabile cambia di valore la funzione relativa viene eseguita
 	UPROPERTY(ReplicatedUsing = OnRep_ChangeMesh)
@@ -93,7 +96,8 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(replicatedUsing = OnRep_EquipWeapon)
 	AWeapon* EquippedWeapon;
 
-
+	
+	
 public:
 
 	UPROPERTY(replicatedUsing = OnRep_Damage)
@@ -134,6 +138,12 @@ public:
 
 	bool bCanFire{ true };
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bHaveTorch{ false };
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AttivaDisattivaTorcia();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -170,6 +180,8 @@ protected:
 	void Slot2_Button(const FInputActionValue& Value);
 
 	void Slot3_Button(const FInputActionValue& Value);
+
+	void TorchButton(const FInputActionValue& Value);
 
 
 	void ChooseWeapon(uint8 selected);

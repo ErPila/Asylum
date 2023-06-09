@@ -187,6 +187,8 @@ void ABaseChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	EPI->BindAction(InputActions[9], ETriggerEvent::Started, this, &ThisClass::Slot3_Button);
 
+	EPI->BindAction(InputActions[10], ETriggerEvent::Started, this, &ThisClass::TorchButton);
+
 }
 
 
@@ -420,6 +422,12 @@ void ABaseChar::Slot3_Button(const FInputActionValue& Value)
 	Equip_Server(CombatComponent->BackPack.Slot3);
 	//CombatComponent->EquipWeapon(CombatComponent->BackPack.Slot3);
 	CombatComponent->SetBackpackSlot(2);
+}
+
+void ABaseChar::TorchButton(const FInputActionValue& Value)
+{
+	// se ho la torcia posso usarla
+	if(bHaveTorch) AttivaDisattivaTorcia();
 }
 
 void ABaseChar::ChooseWeapon(uint8 selected)
