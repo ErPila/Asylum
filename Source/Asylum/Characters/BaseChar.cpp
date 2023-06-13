@@ -428,7 +428,7 @@ void ABaseChar::TorchButton(const FInputActionValue& Value)
 {
 	// se ho la torcia posso usarla
 	if(bHaveTorch) AttivaDisattivaTorcia();
-	UE_LOG(LogTemp, Warning, TEXT("Tasto Torcia"));
+	//UE_LOG(LogTemp, Warning, TEXT("Tasto Torcia"));
 
 }
 

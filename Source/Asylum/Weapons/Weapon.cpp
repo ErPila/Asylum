@@ -87,18 +87,51 @@ void AWeapon::Tick(float DeltaTime)
 	{
 		if(HasAuthority())
 		{
+			
 			FHitResult Hit;
-
 			FTransform StartTrace = WeaponMesh->GetSocketTransform(FName("DamageStartSocket"), RTS_World);
 			FTransform EndTrace = WeaponMesh->GetSocketTransform(FName("DamageEndSocket"), RTS_World);
 			FCollisionQueryParams Params;
 			Params.AddIgnoredActor(this);
 			Params.AddIgnoredActor(GetOwner());
+			bool Found = false;
 
-			GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
+			switch (WeaponType)
+			{
+			case EWeaponType::EWT_Gun:
+
+				
+
+				Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{0}, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
+
+				
+				DrawDebugSphere(GetWorld(), Hit.Location, 20.f, 8, (Found ? FColor::Green : FColor::Red), true, 5.f);
+
+				break;
+			case EWeaponType::EWT_Club:
+			case EWeaponType::EWT_Axe:
+			case EWeaponType::EWT_Pipe:
+			case EWeaponType::EWT_Knife:
+			case EWeaponType::EWT_Scissors:
+			case EWeaponType::EWT_Syringe:
+
+				GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
+
+				break;
+			case EWeaponType::EWT_Trap:
+				break;
+			case EWeaponType::EWT_Wire:
+				break;
+			case EWeaponType::EWT_Cans:
+				break;
+			case EWeaponType::EWT_Molotov:
+				break;
+			case EWeaponType::EWT_MAX:
+				break;
+			}
+
 
 			auto Player = Cast<ABaseChar>(Hit.GetActor());
-
 			if (Player)
 			{		
 				// se colpisco un character imposto il bcanattack a false 
@@ -116,9 +149,7 @@ void AWeapon::Tick(float DeltaTime)
 				// funzione per applicare il danno se siamo il server
 				Player->GetCombat()->ReceiveDamage(Damage);
 			}
-
-			
-			//DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
+			DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
 		}
 
 	}
@@ -231,7 +262,9 @@ void AWeapon::BeginPlay()
 	SetWeaponData();
 	ShowWidget(false);
 	
-	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereBeginOverlap);
+	//CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereBeginOverlap);
+
+	RootSphere->OnComponentHit.AddDynamic(this, &AWeapon::OnHit);
 
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);	// tutti i canali in block
@@ -284,7 +317,7 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 
 	case EWeaponState::EWS_Dropped:
 	{
-		FTimerHandle Time;
+		
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 		SetActorRotation(FRotator(0, GetActorRotation().Yaw, 0));
@@ -302,7 +335,7 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 
 		//UE_LOG(LogTemp, Error, TEXT("Ri Attivo la fisica "));
 
-		if(HasAuthority()) GetWorldTimerManager().SetTimer(Time, this, &AWeapon::DropTimer, 2.5f);
+		if(HasAuthority()) GetWorldTimerManager().SetTimer(Time, this, &AWeapon::DropTimer, 3.f);
 
 		//RootSphere->AddImpulse(Character->GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
 	}
@@ -340,10 +373,6 @@ void AWeapon::SetWeaponStateServer_Implementation(EWeaponState NewState)
 }
 */
 
-
-
-
-
 void AWeapon::SpawnSoundParticle_Implementation(FVector Position, UNiagaraSystem* Particle, USoundCue* Sound)
 {
 
@@ -368,7 +397,29 @@ void AWeapon::OnRep_WeaponState(EWeaponState OldState)
 
 void AWeapon::DropTimer()
 {
-	SetWeaponState(EWeaponState::EWS_Initial);
+	switch (WeaponType)
+	{
+	case EWeaponType::EWT_Gun:
+	case EWeaponType::EWT_Club:
+	case EWeaponType::EWT_Axe:
+	case EWeaponType::EWT_Pipe:
+	case EWeaponType::EWT_Knife:
+	case EWeaponType::EWT_Scissors:
+	case EWeaponType::EWT_Syringe:
+		SetWeaponState(EWeaponState::EWS_Initial);
+		break;
+	case EWeaponType::EWT_Trap:
+		break;
+	case EWeaponType::EWT_Wire:
+		break;
+	case EWeaponType::EWT_Cans:
+		break;
+	case EWeaponType::EWT_Molotov:
+
+
+		break;
+	}
+	
 }
 
 void AWeapon::ShowWidget(bool Visibility)
@@ -379,24 +430,17 @@ void AWeapon::ShowWidget(bool Visibility)
 	}
 }
 
-void AWeapon::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AWeapon::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	/*
+
 	if (WeaponState == EWeaponState::EWS_Dropped)
 	{
-		auto Player = Cast<ABaseChar>(OtherActor);
-
-		if (Player)
+		if (OtherComp->ComponentHasTag("Floor"))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Colpito il giocatore"));
-			// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
-			Player->Damage = 2;
-
-			// funzione per applicare il danno se siamo il server
-			Player->GetCombat()->ReceiveDamage(2);
+			DropTimer();
+			GetWorldTimerManager().ClearTimer(Time);
 		}
 	}
-	*/
 	
 }
 
