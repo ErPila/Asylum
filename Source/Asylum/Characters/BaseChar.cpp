@@ -341,7 +341,7 @@ void ABaseChar::CrouchBP(const FInputActionValue& Value)
 void ABaseChar::Equip_Button(const FInputActionValue& Value)
 {
 	if (CombatComponent && TracedWeapon)
-	{		
+	{
 		//Gestisco il menù in locale senza utilizzare funzioni server
 		CombatComponent->CollectWeapon(TracedWeapon);		
 	}
@@ -352,7 +352,7 @@ void ABaseChar::Equip_Button(const FInputActionValue& Value)
 void ABaseChar::Equip_Server_Implementation(AWeapon* Traced)
 {
 	// questa funzione verrà eseguita su richiesta del client
-	// // immediately equip the weapon
+	// immediately equip the weapon
 	//EquippedWeapon = Traced;
 	CombatComponent->EquipWeapon(Traced);
 	//CombatComponent->CollectWeapon(Traced); // put weapon in the backpack

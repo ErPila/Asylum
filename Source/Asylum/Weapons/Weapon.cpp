@@ -124,7 +124,7 @@ void AWeapon::ExecuteAttack()
 	case EWeaponType::EWT_Scissors:
 	case EWeaponType::EWT_Syringe:
 
-		GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
+		Found = GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
 
 		break;
 	case EWeaponType::EWT_Trap:
@@ -163,13 +163,18 @@ void AWeapon::ExecuteAttack()
 		DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
 		// se ho inserito il sistema particellari lo spawno sul punto di impatto
-		//SpawnSoundParticle(Hit.Location, HitParticle, HitSound);
+		SpawnSoundParticle(Hit.Location, HitParticle, HitSound);
 
 		// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
 		Player->Damage = Damage;
 
 		// funzione per applicare il danno se siamo il server
 		Player->GetCombat()->ReceiveDamage(Damage);
+	}
+	else if(Found)
+	{
+		SpawnSoundParticle(Hit.Location, HitParticle, UseSound);
+		bCanAttack = false;
 	}
 	//DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
 }

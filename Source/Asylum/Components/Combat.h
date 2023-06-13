@@ -78,6 +78,17 @@ public:
 	void RemoveFromBackPack(AWeapon* ToRemove, int32 index);
 
 	UFUNCTION(BlueprintPure)
+	FORCEINLINE float GetActualHp() { return Actual_Hp; };
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetActualHp(float NewVal) { Actual_Hp = NewVal; };
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE float GetMaxHp() { return Max_Hp; };
+
+	
+
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE float GetHpPercent() { return Actual_Hp / Max_Hp; };
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE float GetSanityPercent() { return Actual_Sanity / Max_Sanity; };
