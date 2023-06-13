@@ -43,9 +43,6 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combact", meta = (AllowPrivateAccess = "true"))
 	UCombat* CombatComponent{ nullptr };
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combact", meta = (AllowPrivateAccess = "true"))
-	AActor* Torcia{ nullptr };
-
 	// variabile replicata legata ad una funzione
 	// ogni volta che tale variabile cambia di valore la funzione relativa viene eseguita
 	UPROPERTY(ReplicatedUsing = OnRep_ChangeMesh)
@@ -138,7 +135,7 @@ public:
 
 	bool bCanFire{ true };
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 	bool bHaveTorch{ false };
 
 	UFUNCTION(BlueprintImplementableEvent)
