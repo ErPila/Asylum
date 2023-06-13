@@ -112,8 +112,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon",Replicated)
 	EWeaponType WeaponType{ EWeaponType::EWT_Gun };
 
-
-
 	// Lista proprietà arma modificabili tramite data table
 	
 	USoundCue* PickupSound;
@@ -129,7 +127,6 @@ private:
 	UPROPERTY(VisibleAnyWhere,Category = "Montage")
 	UAnimMontage* WepMontage;
 
-
 	bool bCanAttack{ false };
 
 	FTimerHandle Time;
@@ -141,6 +138,10 @@ public:
 
 	UFUNCTION()
 	void OnRep_WeaponState(EWeaponState OldState);
+	
+	FORCEINLINE int32 GetAmmo() { return Ammo; };
+
+	FORCEINLINE void SetAmmo(int32 Decrement) { Ammo -= Decrement; };
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetCanAttack(bool NewVal) { bCanAttack = NewVal; };

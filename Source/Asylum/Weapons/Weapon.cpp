@@ -96,7 +96,6 @@ void AWeapon::Tick(float DeltaTime)
 		{
 			ExecuteAttack();
 		}
-
 	}
 }
 
@@ -113,8 +112,9 @@ void AWeapon::ExecuteAttack()
 	switch (WeaponType)
 	{
 	case EWeaponType::EWT_Gun:
-
+		
 		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
+		
 
 		break;
 	case EWeaponType::EWT_Club:
