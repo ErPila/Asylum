@@ -97,8 +97,6 @@ public:
 
 	bool CollectWeapon(AWeapon* WeaponToCollect);
 
-	void CheckBackpackFull();
-
 
 	FORCEINLINE int8 GetBackpackSlot() { return BackpackSlot; };
 	
@@ -110,6 +108,12 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void SetWeaponStateServer(EWeaponState NewState,AWeapon* ActualW);
+
+	UFUNCTION(Server, Reliable)
+	void Die_Server();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Die_Multicast();
 
 
 protected:

@@ -219,6 +219,14 @@ void ABaseChar::Attack_Execute()
 		switch (Type)
 		{
 		case EWeaponType::EWT_Gun:
+		
+		// Se ho finito i colpi non sparo
+		if (wep->GetAmmo() <= 0) return;
+	
+		GetCharacterMovement()->MaxWalkSpeed = 0;
+		wep->SetAmmo(1);
+
+		break;
 		case EWeaponType::EWT_Trap:
 		case EWeaponType::EWT_Wire:
 		case EWeaponType::EWT_Cans:

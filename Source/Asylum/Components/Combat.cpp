@@ -68,6 +68,18 @@ void UCombat::SetWeaponStateServer_Implementation(EWeaponState NewState, AWeapon
 	ActualW->SetWeaponState(NewState);
 }
 
+void UCombat::Die_Server_Implementation()
+{
+	Die_Multicast();
+}
+
+void UCombat::Die_Multicast_Implementation()
+{
+	Character->GetMesh()->SetSimulatePhysics(true);
+	Character->GetMesh()->SetCollisionProfileName("Ragdoll");
+	Character->GetCharacterMovement()->DisableMovement();
+}
+
 // Called when the game starts
 void UCombat::BeginPlay()
 {
@@ -92,6 +104,11 @@ void UCombat::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 	if (Actual_Sanity > 0)
 	{
 		Actual_Sanity -= DeltaTime;
+	}
+
+	if ( Actual_Sanity <= 0 || Actual_Hp <= 0)
+	{
+		Die_Server();
 	}
 }
 
@@ -145,25 +162,11 @@ bool UCombat::CollectWeapon(AWeapon* WeaponToCollect)
 	}
 	
 	return true;
-	//CheckBackpackFull();
 }
 
 
-// Controllo se lo zaino è pieno
-void UCombat::CheckBackpackFull()
-{
-/*	for (int i = 0; i < BackPack.Num(); i++)
-	{
 
-		if (BackPack[i] == nullptr)
-		{
-			bIsFull = false;
-			return;
-		}
-	}
 
-	bIsFull = true;*/
-}
 
 
 
