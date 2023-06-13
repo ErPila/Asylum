@@ -147,7 +147,6 @@ public:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	UTexture2D* Icon;
-
 	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponType(uint8 RandMax);
@@ -162,6 +161,8 @@ public:
 
 	void Tick(float DeltaTime);
 
+	void ExecuteAttack();
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EWeaponType GetWeaponType() { return WeaponType; };
 
@@ -173,6 +174,7 @@ public:
 	//UFUNCTION(Server,Reliable)
 	//void SetWeaponStateServer(EWeaponState NewState);
 
+	bool Explode{ false };
 
 	void DropTimer();
 

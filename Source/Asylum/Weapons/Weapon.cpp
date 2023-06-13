@@ -44,6 +44,13 @@ void AWeapon::SetWeaponType(uint8 RandMax)
 	WeaponType = EWeaponType::EWT_Knife;
 	break;
 
+	case 6:
+		WeaponType = EWeaponType::EWT_Molotov;
+	break;
+
+	case 7:
+		WeaponType = EWeaponType::EWT_Syringe;
+	break;
 	
 
 	}
@@ -87,72 +94,84 @@ void AWeapon::Tick(float DeltaTime)
 	{
 		if(HasAuthority())
 		{
-			
-			FHitResult Hit;
-			FTransform StartTrace = WeaponMesh->GetSocketTransform(FName("DamageStartSocket"), RTS_World);
-			FTransform EndTrace = WeaponMesh->GetSocketTransform(FName("DamageEndSocket"), RTS_World);
-			FCollisionQueryParams Params;
-			Params.AddIgnoredActor(this);
-			Params.AddIgnoredActor(GetOwner());
-			bool Found = false;
-
-			switch (WeaponType)
-			{
-			case EWeaponType::EWT_Gun:
-
-				
-
-				Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{0}, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
-
-				
-				DrawDebugSphere(GetWorld(), Hit.Location, 20.f, 8, (Found ? FColor::Green : FColor::Red), true, 5.f);
-
-				break;
-			case EWeaponType::EWT_Club:
-			case EWeaponType::EWT_Axe:
-			case EWeaponType::EWT_Pipe:
-			case EWeaponType::EWT_Knife:
-			case EWeaponType::EWT_Scissors:
-			case EWeaponType::EWT_Syringe:
-
-				GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
-
-				break;
-			case EWeaponType::EWT_Trap:
-				break;
-			case EWeaponType::EWT_Wire:
-				break;
-			case EWeaponType::EWT_Cans:
-				break;
-			case EWeaponType::EWT_Molotov:
-				break;
-			case EWeaponType::EWT_MAX:
-				break;
-			}
-
-
-			auto Player = Cast<ABaseChar>(Hit.GetActor());
-			if (Player)
-			{		
-				// se colpisco un character imposto il bcanattack a false 
-				// così interrompo il trace e applico una volta il danno
-				bCanAttack = false;
-
-				//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
-
-				// se ho inserito il sistema particellari lo spawno sul punto di impatto
-				//SpawnSoundParticle(Hit.Location, HitParticle, HitSound);
-
-				// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
-				Player->Damage = Damage;
-				
-				// funzione per applicare il danno se siamo il server
-				Player->GetCombat()->ReceiveDamage(Damage);
-			}
-			DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
+			ExecuteAttack();
 		}
 
 	}
+}
+
+void AWeapon::ExecuteAttack()
+{
+	FHitResult Hit;
+	FTransform StartTrace = WeaponMesh->GetSocketTransform(FName("DamageStartSocket"), RTS_World);
+	FTransform EndTrace = WeaponMesh->GetSocketTransform(FName("DamageEndSocket"), RTS_World);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+	bool Found = false;
+
+	switch (WeaponType)
+	{
+	case EWeaponType::EWT_Gun:
+
+		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
+
+		break;
+	case EWeaponType::EWT_Club:
+	case EWeaponType::EWT_Axe:
+	case EWeaponType::EWT_Pipe:
+	case EWeaponType::EWT_Knife:
+	case EWeaponType::EWT_Scissors:
+	case EWeaponType::EWT_Syringe:
+
+		GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
+
+		break;
+	case EWeaponType::EWT_Trap:
+		break;
+	case EWeaponType::EWT_Wire:
+		break;
+	case EWeaponType::EWT_Cans:
+		break;
+	case EWeaponType::EWT_Molotov:
+
+		TArray<FHitResult> OggettiColpiti;
+
+		Found = GetWorld()->SweepMultiByChannel(OggettiColpiti, GetActorLocation(), GetActorLocation() + FVector(0, 0, 1), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(100.f), Params);
+		DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
+
+		for (int i = 0; i < OggettiColpiti.Num(); i++)
+		{
+			if (Cast<ABaseChar>(OggettiColpiti[i].GetActor()))
+			{
+				Hit = OggettiColpiti[i];
+				break;
+			}
+		}
+		break;
+
+	}
+
+
+	auto Player = Cast<ABaseChar>(Hit.GetActor());
+	if (Player)
+	{
+		// se colpisco un character imposto il bcanattack a false 
+		// così interrompo il trace e applico una volta il danno
+		bCanAttack = false;
+
+		DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
+
+		// se ho inserito il sistema particellari lo spawno sul punto di impatto
+		//SpawnSoundParticle(Hit.Location, HitParticle, HitSound);
+
+		// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
+		Player->Damage = Damage;
+
+		// funzione per applicare il danno se siamo il server
+		Player->GetCombat()->ReceiveDamage(Damage);
+	}
+	//DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
 }
 
 /*
@@ -415,7 +434,13 @@ void AWeapon::DropTimer()
 	case EWeaponType::EWT_Cans:
 		break;
 	case EWeaponType::EWT_Molotov:
-
+		if (Explode)
+		{
+			ExecuteAttack();
+			Destroy();
+		}
+		else SetWeaponState(EWeaponState::EWS_Initial);
+		
 
 		break;
 	}

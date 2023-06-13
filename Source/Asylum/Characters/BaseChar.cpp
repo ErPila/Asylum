@@ -222,8 +222,14 @@ void ABaseChar::Attack_Execute()
 		case EWeaponType::EWT_Trap:
 		case EWeaponType::EWT_Wire:
 		case EWeaponType::EWT_Cans:
-		case EWeaponType::EWT_Molotov:
 		GetCharacterMovement()->MaxWalkSpeed = 0;
+		break;
+
+		case EWeaponType::EWT_Molotov:
+		GetCharacterMovement()->MaxWalkSpeed = 200;
+		wep->Explode = true;
+		CombatComponent->RemoveFromBackPack(nullptr, CombatComponent->GetBackpackSlot());
+		
 		break;
 
 		case EWeaponType::EWT_Knife:
