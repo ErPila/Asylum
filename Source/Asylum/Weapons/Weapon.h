@@ -30,7 +30,12 @@ struct FWeaponTable : public FTableRowBase
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	USoundCue*  DTHitSound {
+	USoundCue*  DTHitSurfaceSound {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	USoundCue* DTHitBodySound {
 		nullptr
 	};
 
@@ -51,10 +56,17 @@ struct FWeaponTable : public FTableRowBase
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	class UNiagaraSystem* DTFireParticle{ nullptr };
+	TArray<class UNiagaraSystem*> DTFireParticle {
+		nullptr 
+	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	UNiagaraSystem* DTHitParticle {
+	TArray<UNiagaraSystem*> DTHitSurfaceParticle {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	TArray<UNiagaraSystem*> DTHitBodyParticle {
 		nullptr
 	};
 
@@ -116,23 +128,27 @@ private:
 	
 	USoundCue* PickupSound;
 	USoundCue* UseSound;
-	USoundCue* HitSound;
+	USoundCue* HitSurfaceSound;
+	USoundCue* HitBodySound;
 	uint8 Damage;
 	float FireRate{ 0.f };
 	int32 Ammo;
 	USkeletalMesh*  Mesh;
-	UNiagaraSystem* FireParticle;
-	UNiagaraSystem* HitParticle;
+	TArray<UNiagaraSystem*> FireParticle;
+	TArray<UNiagaraSystem*> HitSurfaceParticle;
+	TArray<UNiagaraSystem*> HitBodyParticle;
 
 	UPROPERTY(VisibleAnyWhere,Category = "Montage")
 	UAnimMontage* WepMontage;
 
 	bool bCanAttack{ false };
 
+	bool bSoundDone{ false };
+
 	FTimerHandle Time;
 
 	UFUNCTION(NetMulticast, Unreliable)
-	void SpawnSoundParticle(FVector Position, UNiagaraSystem* Particle = nullptr, USoundCue* Sound = nullptr);
+	void SpawnSoundParticle(FVector Position, const TArray<UNiagaraSystem*> &Particle, USoundCue* Sound = nullptr);
 
 public:	
 
@@ -145,6 +161,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetCanAttack(bool NewVal) { bCanAttack = NewVal; };
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetSoundDone(bool NewVal) { bSoundDone = NewVal; };
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	UTexture2D* Icon;

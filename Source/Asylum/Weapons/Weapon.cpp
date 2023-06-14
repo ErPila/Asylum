@@ -114,7 +114,8 @@ void AWeapon::ExecuteAttack()
 	case EWeaponType::EWT_Gun:
 		
 		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
-		
+		SpawnSoundParticle(StartTrace.GetLocation(), FireParticle, UseSound);
+
 
 		break;
 	case EWeaponType::EWT_Club:
@@ -140,6 +141,8 @@ void AWeapon::ExecuteAttack()
 		Found = GetWorld()->SweepMultiByChannel(OggettiColpiti, GetActorLocation(), GetActorLocation() + FVector(0, 0, 1), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(100.f), Params);
 		DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
 
+		SpawnSoundParticle(GetActorLocation(), FireParticle, UseSound);
+
 		for (int i = 0; i < OggettiColpiti.Num(); i++)
 		{
 			if (Cast<ABaseChar>(OggettiColpiti[i].GetActor()))
@@ -159,11 +162,12 @@ void AWeapon::ExecuteAttack()
 		// se colpisco un character imposto il bcanattack a false 
 		// così interrompo il trace e applico una volta il danno
 		bCanAttack = false;
+		bSoundDone = false;
 
 		DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
 		// se ho inserito il sistema particellari lo spawno sul punto di impatto
-		SpawnSoundParticle(Hit.Location, HitParticle, HitSound);
+		SpawnSoundParticle(Hit.Location, HitBodyParticle, HitBodySound);
 
 		// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
 		Player->Damage = Damage;
@@ -171,12 +175,26 @@ void AWeapon::ExecuteAttack()
 		// funzione per applicare il danno se siamo il server
 		Player->GetCombat()->ReceiveDamage(Damage);
 	}
-	else if(Found)
+	else if (!bSoundDone)
 	{
-		SpawnSoundParticle(Hit.Location, HitParticle, UseSound);
-		bCanAttack = false;
+		UE_LOG(LogTemp, Error, TEXT("Nel Suono"));
+
+		if (Found)
+		{
+			SpawnSoundParticle(Hit.Location, HitSurfaceParticle, HitSurfaceSound);
+			//bCanAttack = false;
+		}
+		else
+		{
+			if (UseSound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), UseSound, GetActorLocation());
+			//SpawnSoundParticle(Hit.Location, , UseSound);
+			//bCanAttack = false;
+
+		}
+
+		bSoundDone = true;
 	}
-	//DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
+	DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
 }
 
 /*
@@ -242,16 +260,17 @@ void AWeapon::SetWeaponData()
 			Icon = TypeRow->DTIcon;
 			PickupSound = TypeRow->DTPickupSound;
 			UseSound = TypeRow->DTUseSound;
-			HitSound = TypeRow->DTHitSound;
+			HitSurfaceSound = TypeRow->DTHitSurfaceSound;
+			HitBodySound = TypeRow->DTHitBodySound;
 			Damage = TypeRow->DTDamage;
 			FireRate = TypeRow->DTFireRate;
 			Ammo = TypeRow->DTAmmo;
 			Mesh = TypeRow->DTMesh;
 			FireParticle = TypeRow->DTFireParticle;
-			HitParticle = TypeRow->DTHitParticle;
+			HitSurfaceParticle = TypeRow->DTHitSurfaceParticle;
+			HitBodyParticle = TypeRow->DTHitBodyParticle;
 
-
-			//UE_LOG(LogTemp, Error, TEXT("rate %f"), FireRate);
+			UE_LOG(LogTemp, Error, TEXT("rate %i"), HitBodyParticle.Num());
 
 			//WeaponMesh->SetRenderCustomDepth(false);
 
@@ -397,7 +416,7 @@ void AWeapon::SetWeaponStateServer_Implementation(EWeaponState NewState)
 }
 */
 
-void AWeapon::SpawnSoundParticle_Implementation(FVector Position, UNiagaraSystem* Particle, USoundCue* Sound)
+void AWeapon::SpawnSoundParticle_Implementation(FVector Position, const TArray<UNiagaraSystem*> &Particle, USoundCue* Sound)
 {
 
 	if (Sound)
@@ -405,9 +424,11 @@ void AWeapon::SpawnSoundParticle_Implementation(FVector Position, UNiagaraSystem
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound, Position);
 	}
 
-	if (Particle)
+	if (!Particle.IsEmpty())
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Particle, Position);
+		auto rnd{ FMath::RandRange(0, Particle.Num() - 1) };
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Particle[rnd], Position);
 	}
 }
 
