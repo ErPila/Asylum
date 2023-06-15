@@ -17,6 +17,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
 #include "Asylum/Components/Combat.h"
+#include "Asylum/Components/Door.h"
 // network
 #include "Net/UnrealNetwork.h"
 // Classi esterne
@@ -617,7 +618,13 @@ void ABaseChar::TraceForWeapon()
 	//UE_LOG(LogTemp, Error, TEXT("Ciao sono %s"), *GetName());
 	if (hit)
 	{
-		
+
+		if (MyHit.GetActor()->FindComponentByClass<UDoor>())
+		{
+			// setto la porta come traced
+			return;
+		}
+
 		//UE_LOG(LogTemp, Error, TEXT("Hit Generico %s"), *MyHit.GetComponent()->GetName());
 		auto myact = Cast<ICollectInterface>(MyHit.GetActor());
 		if (myact)

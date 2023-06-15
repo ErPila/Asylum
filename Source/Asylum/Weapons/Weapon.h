@@ -126,16 +126,27 @@ private:
 
 	// Lista proprietà arma modificabili tramite data table
 	
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	USoundCue* PickupSound;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	USoundCue* UseSound;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	USoundCue* HitSurfaceSound;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	USoundCue* HitBodySound;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	uint8 Damage;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	float FireRate{ 0.f };
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	int32 Ammo;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	USkeletalMesh*  Mesh;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	TArray<UNiagaraSystem*> FireParticle;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	TArray<UNiagaraSystem*> HitSurfaceParticle;
+	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	TArray<UNiagaraSystem*> HitBodyParticle;
 
 	UPROPERTY(VisibleAnyWhere,Category = "Montage")
