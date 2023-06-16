@@ -12,9 +12,10 @@ class ASYLUM_API UDoor : public UActorComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere);
-	UStaticMesh* MeshToOpen;
-
+	AActor* Mesh;
+	
+	UPROPERTY(EditAnywhere)
+	bool bOpen{ false };
 public:	
 	// Sets default values for this component's properties
 	UDoor();
@@ -23,6 +24,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	//virtual void OnCostruct() override;
 
 	
 

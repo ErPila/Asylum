@@ -270,7 +270,7 @@ void AWeapon::SetWeaponData()
 			HitSurfaceParticle = TypeRow->DTHitSurfaceParticle;
 			HitBodyParticle = TypeRow->DTHitBodyParticle;
 
-			UE_LOG(LogTemp, Error, TEXT("rate %i"), HitBodyParticle.Num());
+			//UE_LOG(LogTemp, Error, TEXT("rate %i"), HitBodyParticle.Num());
 
 			//WeaponMesh->SetRenderCustomDepth(false);
 

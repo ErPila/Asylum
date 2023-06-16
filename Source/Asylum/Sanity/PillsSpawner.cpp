@@ -92,10 +92,8 @@ bool APillsSpawner::VerifySphere(FVector NewLoc)
 		ECC_Visibility,
 		FCollisionShape::MakeSphere(20.f));
 
-	DrawDebugSphere(GetWorld(), NewLoc,  20.f, 8, (Found ? FColor::Green : FColor::Red), true, 5.f);
-
-
-	UE_LOG(LogTemp, Error, TEXT("Verifico") );
+	//DrawDebugSphere(GetWorld(), NewLoc,  20.f, 8, (Found ? FColor::Green : FColor::Red), true, 5.f);
+	//UE_LOG(LogTemp, Error, TEXT("Verifico") );
 
 
 	return Found;
