@@ -621,6 +621,7 @@ void ABaseChar::TraceForWeapon()
 
 		if (MyHit.GetActor()->FindComponentByClass<UDoor>())
 		{
+			UE_LOG(LogTemp, Error, TEXT("Vedo porta"));
 			// setto la porta come traced
 			return;
 		}
