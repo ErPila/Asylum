@@ -31,6 +31,7 @@ class ASYLUM_API USelect : public UUserWidget
 	UFUNCTION(BlueprintCallable)
 	void MenuSetup();
 
+
 	UFUNCTION()
 	void SetAnge();
 	UFUNCTION()

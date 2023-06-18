@@ -94,7 +94,17 @@ class ASYLUM_API ABaseChar : public ACharacter
 	AWeapon* EquippedWeapon;
 
 	
+	UStaticMeshComponent* LastDoorMesh{ nullptr };
 	
+	class  UDoor*         LastDoorComp{ nullptr };
+
+
+	UFUNCTION(Server,Reliable)
+	void ServerOpen(UDoor* ThisDoor);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiOpen(UDoor* ThisDoor);
+
 public:
 
 	UPROPERTY(replicatedUsing = OnRep_Damage)
@@ -216,5 +226,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void OpenButton(const FInputActionValue& Value);
+
+
+	//void OpenServer(UStaticMeshComponent* ToOpen);
 
 };

@@ -8,8 +8,10 @@ UDoor::UDoor()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;	
 
+	PrimaryComponentTick.bCanEverTick = true;
+	//PrimaryComponentTick.bTickEvenWhenPaused = true;
+	//PrimaryComponentTick.TickGroup = TG_PrePhysics;
 	// ...
 }
 
@@ -18,21 +20,13 @@ void UDoor::OpenDoor()
 	
 	if(Mesh)
 	{
-		//UE_LOG(LogTemp, Error, TEXT("%s"), *p->GetName());
+		switch (OpenState)
+		{
+		case 0:
+		case 2:
+		OpenState++;
+		break;
 
-		if (!bOpen)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Porta aperta"));
-			Mesh->SetActorRelativeRotation(FRotator(0, 90, 0));
-			//p->SetRelativeRotation(FRotator(0, 0, 90));
-			bOpen = true;
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Porta Chiusa"));
-			Mesh->SetActorRelativeRotation(FRotator(0, 0, 0));
-			//p->SetRelativeRotation(FRotator(0, 0, 0));
-			bOpen = false;
 		}
 	}
 }
@@ -44,8 +38,9 @@ void UDoor::BeginPlay()
 	Super::BeginPlay();
 
 	Mesh = Cast<AActor>(GetOwner());
+    StartYaw = Mesh->GetActorRotation().Yaw;
 
-	OpenDoor();
+//	OpenDoor();
 
 	
 	
@@ -57,6 +52,49 @@ void UDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	
+
+	switch (OpenState)
+	{
+	case 0:  
+		
+	break; // close
+
+
+	case 1:   
+	{
+		FRotator ActualRot{ Mesh->GetActorRotation() };
+
+		if (ActualRot.Yaw < StartYaw + OpenAngle)
+		{
+			Mesh->SetActorRelativeRotation(ActualRot + FRotator(0, 90 * DeltaTime, 0));
+		}
+		else OpenState++;
+
+	}
+	break; // opening
+
+
+	case 2: 
+		
+
+	break;  // openstate
+
+
+	case 3:
+	{
+		FRotator ActualRot{ Mesh->GetActorRotation() };
+
+		if (ActualRot.Yaw > StartYaw)
+		{
+			Mesh->SetActorRelativeRotation(ActualRot - FRotator(0, 90 * DeltaTime, 0));
+		}
+		else OpenState = 0;
+	}
+	break;
+
+
+	}
+
+
 }
 

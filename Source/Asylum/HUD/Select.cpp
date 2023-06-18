@@ -129,10 +129,11 @@ bool USelect::Initialize()
 		if (TMP->ActorHasTag("Light")){ Luce = TMP;  UE_LOG(LogTemp, Error, TEXT("Found Light")); };
 	}
 
-	if (Luce && Chris)
+	if (Luce && Luca)
 	{
-		Selected = 1;
-		Luce->SetActorLocation(Chris->GetActorLocation() + FVector(-60, 0, 200));
+		//Selected = 2;
+	//	Luce->SetActorLocation(Chris->GetActorLocation() + FVector(-60, 0, 200));
+		SetLuca();
 	}
 
 

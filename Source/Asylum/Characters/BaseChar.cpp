@@ -190,14 +190,39 @@ void ABaseChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	EPI->BindAction(InputActions[10], ETriggerEvent::Started, this, &ThisClass::TorchButton);
 
+	EPI->BindAction(InputActions[11], ETriggerEvent::Started, this, &ThisClass::OpenButton);
 }
 
+
+void ABaseChar::OpenButton(const FInputActionValue& Value)
+{
+	if (LastDoorComp)
+	{  
+
+		ServerOpen(LastDoorComp);
+
+	}
+
+}
+
+void ABaseChar::ServerOpen_Implementation(UDoor* ThisDoor)
+{
+	MultiOpen(ThisDoor);
+}
+
+
+void ABaseChar::MultiOpen_Implementation(UDoor* ThisDoor)
+{
+	ThisDoor->OpenDoor();
+}
 
 
 void ABaseChar::Attack_Button(const FInputActionValue& Value) { 
 	//UE_LOG(LogTemp, Error, TEXT("Primo"));
 	Attack_Server();
 }
+
+
 void ABaseChar::Attack_Server_Implementation() { Attack_Multicast(); }
 bool ABaseChar::Attack_Server_Validate() { return true; }
 void ABaseChar::Attack_Multicast_Implementation() { Attack_Execute(); }
@@ -618,12 +643,22 @@ void ABaseChar::TraceForWeapon()
 	//UE_LOG(LogTemp, Error, TEXT("Ciao sono %s"), *GetName());
 	if (hit)
 	{
+		LastDoorComp = MyHit.GetActor()->FindComponentByClass<UDoor>();
 
-		if (MyHit.GetActor()->FindComponentByClass<UDoor>())
+		if (LastDoorComp)
+		{		
+			LastDoorMesh =  MyHit.GetActor()->FindComponentByClass<UStaticMeshComponent>() ;
+			if (LastDoorMesh) LastDoorMesh->SetRenderCustomDepth(true);
+		}
+		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("Vedo porta"));
-			// setto la porta come traced
-			return;
+			if (LastDoorMesh)
+			{
+				LastDoorMesh->SetRenderCustomDepth(false);
+				LastDoorMesh = nullptr;
+				LastDoorComp = nullptr;
+			}
+
 		}
 
 		//UE_LOG(LogTemp, Error, TEXT("Hit Generico %s"), *MyHit.GetComponent()->GetName());
@@ -636,7 +671,17 @@ void ABaseChar::TraceForWeapon()
 		else SetTracedWeapon(nullptr);
 
 	}
-	else SetTracedWeapon(nullptr);
+	else
+	{
+		if (LastDoorMesh)
+		{
+			LastDoorMesh->SetRenderCustomDepth(false);
+			LastDoorMesh = nullptr;
+			LastDoorComp = nullptr;
+		}
+
+		SetTracedWeapon(nullptr);
+	}
 }
 
 bool ABaseChar::ItemTrace(FHitResult& OutHit)
