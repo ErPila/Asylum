@@ -214,6 +214,8 @@ void ABaseChar::ServerOpen_Implementation(UDoor* ThisDoor)
 void ABaseChar::MultiOpen_Implementation(UDoor* ThisDoor)
 {
 	ThisDoor->OpenDoor();
+
+	MultiInteract();
 }
 
 
@@ -369,8 +371,12 @@ void ABaseChar::Equip_Button(const FInputActionValue& Value)
 	if (CombatComponent && TracedWeapon)
 	{
 		//Gestisco il menù in locale senza utilizzare funzioni server
-		CombatComponent->CollectWeapon(TracedWeapon);		
+		CombatComponent->CollectWeapon(TracedWeapon);	
+
+		MultiInteract();
 	}
+
+
 }
 
 // La funzione di tipo server verra scomposta in "sotto funzioni"
@@ -381,6 +387,8 @@ void ABaseChar::Equip_Server_Implementation(AWeapon* Traced)
 	// immediately equip the weapon
 	//EquippedWeapon = Traced;
 	CombatComponent->EquipWeapon(Traced);
+
+
 	//CombatComponent->CollectWeapon(Traced); // put weapon in the backpack
 
 }
@@ -733,6 +741,18 @@ void ABaseChar::SetTracedWeapon(AWeapon* NewWeapon)
 }
 
 
+void ABaseChar::MultiInteract_Implementation()
+{
+	if (InteractMontage && bCanFire)
+	{
+		bCanFire = false;
+
+		auto MyAnim = GetMesh()->GetAnimInstance();
+
+		MyAnim->Montage_Play(InteractMontage);
+	}
+}
+
 void ABaseChar::OnRep_Damage(uint8 PrevDamage)
 {
 	GetCombat()->Actual_Hp -= Damage;
@@ -747,6 +767,8 @@ void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipment);
+
+		
 		//UE_LOG(LogTemp, Error, TEXT("Scambio arma"));
 	}
 	else

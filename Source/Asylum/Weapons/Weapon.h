@@ -128,7 +128,7 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	USoundCue* PickupSound;
-	UPROPERTY(EditAnywhere, Category = "Statistiche")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Statistiche", meta = (AllowPrivateAccess = "true"))
 	USoundCue* UseSound;
 	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	USoundCue* HitSurfaceSound;

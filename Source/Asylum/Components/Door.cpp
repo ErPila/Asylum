@@ -39,11 +39,7 @@ void UDoor::BeginPlay()
 
 	Mesh = Cast<AActor>(GetOwner());
     StartYaw = Mesh->GetActorRotation().Yaw;
-
-//	OpenDoor();
-
-	
-	
+		
 }
 
 

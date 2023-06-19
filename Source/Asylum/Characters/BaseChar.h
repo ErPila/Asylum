@@ -79,6 +79,9 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* DropWeaponMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* InteractMontage;
+
 	// Yaw e Pitch da passare all'anim instance
 	float AO_Yaw;
 	float AO_Pitch;
@@ -104,6 +107,10 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiOpen(UDoor* ThisDoor);
+
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiInteract();
 
 public:
 

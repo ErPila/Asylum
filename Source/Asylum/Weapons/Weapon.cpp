@@ -177,24 +177,15 @@ void AWeapon::ExecuteAttack()
 	}
 	else if (!bSoundDone)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Nel Suono"));
-
 		if (Found)
 		{
 			SpawnSoundParticle(Hit.Location, HitSurfaceParticle, HitSurfaceSound);
 			//bCanAttack = false;
-		}
-		else
-		{
-			if (UseSound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), UseSound, GetActorLocation());
-			//SpawnSoundParticle(Hit.Location, , UseSound);
-			//bCanAttack = false;
-
-		}
-
-		bSoundDone = true;
+			bSoundDone = true;
+		}	
 	}
-	DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
+
+	//DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
 }
 
 /*
