@@ -106,7 +106,12 @@ void UCombat::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 		Actual_Sanity -= DeltaTime;
 	}
 
-	if ( Actual_Sanity <= 0 || Actual_Hp <= 0)
+	if (Actual_Sanity <= 0)
+	{
+		Actual_Hp -= 0.5 * DeltaTime;
+	}
+
+	if (Actual_Hp <= 0)
 	{
 		Die_Server();
 	}
