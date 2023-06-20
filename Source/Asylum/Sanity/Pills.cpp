@@ -20,12 +20,12 @@ void APills::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	MySystem = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+	/*MySystem = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		this,
 		VFX_Pills,
 		GetActorLocation(),
 		GetActorRotation());
-	
+	*/
 }
 
 void APills::EndPlay(const EEndPlayReason::Type EndPlayReason)

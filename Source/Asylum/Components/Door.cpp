@@ -2,6 +2,8 @@
 
 
 #include "Door.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UDoor::UDoor()
@@ -23,7 +25,7 @@ void UDoor::OpenDoor()
 		switch (OpenState)
 		{
 		case 0:
-		case 2:
+		case 3:
 		OpenState++;
 		break;
 
@@ -55,41 +57,53 @@ void UDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentT
 		
 	break; // close
 
+	case 1:
 
-	case 1:   
+		if (Sound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound, Mesh->GetActorLocation());
+		OpenState++;
+	break;
+
+	case 2:   
 	{
 		FRotator ActualRot{ Mesh->GetActorRotation() };
 
 		if (ActualRot.Yaw < StartYaw + OpenAngle)
 		{
 			//Mesh->SetActorRelativeRotation(ActualRot + FRotator(0, 90 * DeltaTime, 0));
-
+			//Mesh->SetActorRotation(FRotator(0, 90 * DeltaTime, 0));
 			Mesh->AddActorLocalRotation(FRotator(0, 90 * DeltaTime, 0));
 
 		}
 		else OpenState++;
 
+		
 	}
 	break; // opening
 
 
-	case 2: 
+	case 3: 
 		
 
 	break;  // openstate
 
+	case 4:
 
-	case 3:
+		if (Sound) UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound, Mesh->GetActorLocation());
+		OpenState++;
+	break;
+
+	case 5:
 	{
 		FRotator ActualRot{ Mesh->GetActorRotation() };
 
 		if (ActualRot.Yaw > StartYaw)
 		{
-			Mesh->AddActorLocalRotation(FRotator(0, 90 * DeltaTime, 0));
+			Mesh->AddActorLocalRotation(FRotator(0, -90 * DeltaTime, 0));
 
 			//Mesh->SetActorRelativeRotation(ActualRot - FRotator(0, 90 * DeltaTime, 0));
 		}
 		else OpenState = 0;
+
 	}
 	break;
 

@@ -19,6 +19,9 @@ class ASYLUM_API UDoor : public UActorComponent
 	UPROPERTY(EditAnyWhere)
 	float OpenAngle{ 90.f };
 
+	UPROPERTY(EditAnywhere, Category = "Suound")
+	class USoundCue* Sound;
+
 
 public:	
 	// Sets default values for this component's properties
