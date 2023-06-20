@@ -62,7 +62,10 @@ void UDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentT
 
 		if (ActualRot.Yaw < StartYaw + OpenAngle)
 		{
-			Mesh->SetActorRelativeRotation(ActualRot + FRotator(0, 90 * DeltaTime, 0));
+			//Mesh->SetActorRelativeRotation(ActualRot + FRotator(0, 90 * DeltaTime, 0));
+
+			Mesh->AddActorLocalRotation(FRotator(0, 90 * DeltaTime, 0));
+
 		}
 		else OpenState++;
 
@@ -82,7 +85,9 @@ void UDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentT
 
 		if (ActualRot.Yaw > StartYaw)
 		{
-			Mesh->SetActorRelativeRotation(ActualRot - FRotator(0, 90 * DeltaTime, 0));
+			Mesh->AddActorLocalRotation(-FRotator(0, 90 * DeltaTime, 0));
+
+			//Mesh->SetActorRelativeRotation(ActualRot - FRotator(0, 90 * DeltaTime, 0));
 		}
 		else OpenState = 0;
 	}
