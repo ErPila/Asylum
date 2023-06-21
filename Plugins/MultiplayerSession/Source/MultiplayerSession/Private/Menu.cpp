@@ -51,9 +51,7 @@ void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FStr
 
 		MultiPlayerSessionsSS->MpOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySession);
 		MultiPlayerSessionsSS->MpOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSession);
-
 	}
-
 }
 
 bool UMenu::Initialize() // initialize is just after the constructor 
