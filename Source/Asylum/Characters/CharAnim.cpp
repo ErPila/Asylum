@@ -55,8 +55,8 @@ void UCharAnim::NativeUpdateAnimation(float DeltaTime)
 	YawOffet = DR.Yaw;
 
 
-	FString Offset{ FString::Printf(TEXT(" Offset Yaw = %f"),YawOffet) };
-	GEngine->AddOnScreenDebugMessage(1, -1, FColor::Cyan, Offset);
+	//FString Offset{ FString::Printf(TEXT(" Offset Yaw = %f"),YawOffet) };
+	//GEngine->AddOnScreenDebugMessage(1, -1, FColor::Cyan, Offset);
 
 	//Gestione del socket per il braccio sinistro
 

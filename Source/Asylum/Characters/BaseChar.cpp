@@ -77,8 +77,8 @@ void ABaseChar::SetCharType(uint8 Selected)
 		if (TypeRow)
 		{
 			CharMeshes = TypeRow->DTMesh;
-
 			AnimBP = TypeRow->DTAnimBP;
+			Icon = TypeRow->DTIcon;
 			Torcia = TypeRow->DTTorch;
 			TorciaLocationOffset = TypeRow->DTLocationOffset;
 			TorciaRotationOffset = TypeRow->DTRotationOffset;

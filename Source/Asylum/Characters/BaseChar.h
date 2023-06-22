@@ -32,6 +32,11 @@ struct FCharTable : public FTableRowBase
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UTexture2D* DTIcon {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		UStaticMesh* DTTorch {
 		nullptr
 	};
@@ -117,6 +122,12 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(EditAnyWhere, Category = "MyMadman")
 	USkeletalMesh* CharMeshes;
 
+	UPROPERTY(EditAnyWhere, Category = "MyMadman")
+	UClass* AnimBP;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* Icon;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* Torcia;
 
@@ -135,8 +146,7 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FRotator LuceRotationOffset;
 
-	UPROPERTY(EditAnyWhere, Category = "MyMadman")
-	UClass* AnimBP;
+	
 	//UFUNCTION(NetMulticast, Reliable, WithValidation)
 	//void MulticastThrow();
 
