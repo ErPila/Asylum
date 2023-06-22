@@ -40,6 +40,64 @@ void ABaseChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 //	DOREPLIFETIME_CONDITION(ThisClass, SelectedMesh, COND_OwnerOnly); // replica sempre la variabile
 }
 
+void ABaseChar::SetCharType(uint8 Selected)
+{
+	FString TablePath(TEXT("DataTable'/Game/_Assets/Structures/DataTables/DT_CharType.DT_CharType'"));
+
+	UDataTable* CharDT = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *TablePath));
+
+	if (CharDT)
+	{
+		//UE_LOG(LogTemp, Error, TEXT("Data Table Trovata"));
+
+		FCharTable* TypeRow{ nullptr };
+
+		switch (Selected)
+		{
+		case 0:
+
+			TypeRow = CharDT->FindRow<FCharTable>(FName("Angelica"), TEXT(""));
+
+			break;
+
+		case 1:
+
+			TypeRow = CharDT->FindRow<FCharTable>(FName("Christian"), TEXT(""));
+
+			break;
+
+		case 2:
+
+			TypeRow = CharDT->FindRow<FCharTable>(FName("Luca"), TEXT(""));
+
+			break;
+
+		}
+
+		if (TypeRow)
+		{
+			CharMeshes = TypeRow->DTMesh;
+
+			AnimBP = TypeRow->DTAnimBP;
+			Torcia = TypeRow->DTTorch;
+			TorciaLocationOffset = TypeRow->DTLocationOffset;
+			TorciaRotationOffset = TypeRow->DTRotationOffset;
+			TorciaScaleOffset = TypeRow->DTScaleOffset;
+			LuceLocationOffset = TypeRow->DTLuceLocationOffset;
+			LuceRotationOffset = TypeRow->DTLuceRotationOffset;
+
+
+			GetMesh()->SetSkeletalMesh(CharMeshes);
+			GetMesh()->SetAnimClass(AnimBP);
+
+			UE_LOG(LogTemp, Warning, TEXT(" Torcia %s"), *Torcia->GetName());
+
+			SetChange();
+
+		}
+	}
+}
+
 // Sets default values
 ABaseChar::ABaseChar():
 	bIsInAir(false),
@@ -90,35 +148,39 @@ void ABaseChar::BeginPlay()
 	StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 	LocallyControlled = IsLocallyControlled();
 
-		
-  
     auto GS{ Cast<UAsylumInstance>(GetWorld()->GetGameInstance()) };
+
+	
 
     if (IsLocallyControlled())
 	   {
 		   // case 1  Locally controlled Client
 		   if (!HasAuthority())  // in this case I will change immediately my gfx then ask the server to do the same
 		   {
+			   SetCharType(GS->SelectedCharacter);
+
 			   Begin_Server(GS->SelectedCharacter); // call a  function to set up gfx on the server 
-			   GetMesh()->SetSkeletalMesh(CharMeshes[GS->SelectedCharacter]);
-			   GetMesh()->SetAnimClass(AnimBP[GS->SelectedCharacter]);
+			//   GetMesh()->SetSkeletalMesh(CharMeshes);
+			 //  GetMesh()->SetAnimClass(AnimBP);
 			   SelectedMesh = GS->SelectedCharacter;
 		   }
 		   else	  
 		   {  
-			   GetMesh()->SetSkeletalMesh(CharMeshes[GS->SelectedCharacter]);
-			   GetMesh()->SetAnimClass(AnimBP[GS->SelectedCharacter]);
+			   SetCharType(GS->SelectedCharacter);
+			 //  GetMesh()->SetSkeletalMesh(CharMeshes);
+			//   GetMesh()->SetAnimClass(AnimBP);
 			   SelectedMesh = GS->SelectedCharacter;
 		   }
-	   }
-		
+	   }	
+	
 }
 
 
 void ABaseChar::Begin_Server_Implementation(uint8 Selected)
 {
-	GetMesh()->SetSkeletalMesh(CharMeshes[Selected]);	
-	GetMesh()->SetAnimClass(AnimBP[Selected]);
+	SetCharType(Selected);
+	//GetMesh()->SetSkeletalMesh(CharMeshes);	
+	//GetMesh()->SetAnimClass(AnimBP);
 	//Begin_Multicast(Selected);  
 	SelectedMesh = Selected;
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Blue, FString::Printf(TEXT("Change on server I %i"), Selected));
@@ -141,8 +203,11 @@ void ABaseChar::OnRep_ChangeMesh()
 
 //	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, FString::Printf(TEXT("On Replication %i"), SelectedMesh));
 
-	GetMesh()->SetSkeletalMesh(CharMeshes[SelectedMesh]);
+	SetCharType(SelectedMesh);
+	//GetMesh()->SetSkeletalMesh(CharMeshes);
 }
+
+
 
 void ABaseChar::CollectPills()
 {
@@ -289,7 +354,7 @@ void ABaseChar::Attack_Execute()
 		break;
 		}
 
-		if (wep->GetWepMontage())
+		if (wep->GetWepMontage(0))
 		{
 			//UE_LOG(LogTemp, Error, TEXT("Quarto"));
 			bCanFire = false;
@@ -298,7 +363,7 @@ void ABaseChar::Attack_Execute()
 
 			//UE_LOG(LogTemp, Warning, TEXT("rate %f"), wep->GetFireRate());
 
-			MyAnim->Montage_Play(wep->GetWepMontage(),wep->GetFireRate());
+			MyAnim->Montage_Play(wep->GetWepMontage(0),wep->GetFireRate());
 			if (bRandAnim)
 			{
 				switch (FMath::RandRange(1, 3))

@@ -16,8 +16,8 @@ struct FWeaponTable : public FTableRowBase
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-		UTexture2D* DTIcon { nullptr };
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UTexture2D* DTIcon { nullptr };
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	USoundCue*  DTPickupSound {
@@ -91,7 +91,7 @@ struct FWeaponTable : public FTableRowBase
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
-	UAnimMontage* DTMontage {
+	TArray<UAnimMontage*> DTMontage {
 		nullptr
 	};
 };
@@ -150,7 +150,7 @@ private:
 	TArray<UNiagaraSystem*> HitBodyParticle;
 
 	UPROPERTY(VisibleAnyWhere,Category = "Montage")
-	UAnimMontage* WepMontage;
+	TArray<UAnimMontage*> WepMontage;
 
 	bool bCanAttack{ false };
 
@@ -185,7 +185,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	EWeaponState GetWeaponState() { return WeaponState; };
 
-	UAnimMontage* GetWepMontage() { return WepMontage; }
+	UAnimMontage* GetWepMontage(int8 index) { return WepMontage[index]; }
 
 	// Sets default values for this actor's properties
 	AWeapon();

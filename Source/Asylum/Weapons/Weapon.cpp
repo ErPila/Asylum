@@ -45,11 +45,11 @@ void AWeapon::SetWeaponType(uint8 RandMax)
 	break;
 
 	case 6:
-		WeaponType = EWeaponType::EWT_Molotov;
+	WeaponType = EWeaponType::EWT_Molotov;
 	break;
 
 	case 7:
-		WeaponType = EWeaponType::EWT_Syringe;
+	WeaponType = EWeaponType::EWT_Syringe;
 	break;
 	
 
@@ -274,7 +274,7 @@ void AWeapon::SetWeaponData()
 
 			WeaponMesh->SetCustomDepthStencilValue(TypeRow->DTCustomStencil);
 
-			WepMontage = TypeRow->DTMontage;
+			//WepMontage = TypeRow->DTMontage;
 		}
 
 	}

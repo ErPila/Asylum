@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Engine/DataTable.h"
 #include "InputMappingContext.h"
 #include "Asylum/Enum/TurnState.h"
 #include "BaseChar.generated.h"
@@ -14,6 +15,52 @@ class USpringArmComponent;
 class UCameraComponent;
 class UWidgetComponent;
 class AWeapon;
+
+USTRUCT(BlueprintType)
+struct FCharTable : public FTableRowBase
+{
+	GENERATED_BODY()
+		
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		USkeletalMesh* DTMesh {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UClass* DTAnimBP {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UStaticMesh* DTTorch {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		FVector DTLocationOffset {
+		FVector(0)
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		FRotator DTRotationOffset {
+		FRotator(0)
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		FVector DTScaleOffset {
+		FVector(1)
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		FVector DTLuceLocationOffset {
+		FVector(0)
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		FRotator DTLuceRotationOffset {
+		FRotator(0)
+	};
+};
 
 UCLASS()
 class ASYLUM_API ABaseChar : public ACharacter
@@ -54,6 +101,8 @@ class ASYLUM_API ABaseChar : public ACharacter
 	//UPROPERTY(ReplicatedUsing = OnRep_TracedWeapon)
 	AWeapon* TracedWeapon;
 
+	void SetCharType(uint8 Selected);
+
 	UFUNCTION(BlueprintCallable,Category = "Sanity")
 	void CollectPills();
 	//UFUNCTION()
@@ -64,12 +113,30 @@ class ASYLUM_API ABaseChar : public ACharacter
 	//UFUNCTION()
 	//void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
+	// Data table
 	UPROPERTY(EditAnyWhere, Category = "MyMadman")
-	TArray<USkeletalMesh*> CharMeshes;
+	USkeletalMesh* CharMeshes;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	UStaticMesh* Torcia;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	FVector TorciaLocationOffset;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	FRotator TorciaRotationOffset;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	FVector TorciaScaleOffset;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	FVector LuceLocationOffset;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	FRotator LuceRotationOffset;
 
 	UPROPERTY(EditAnyWhere, Category = "MyMadman")
-	TArray<UClass*> AnimBP;
+	UClass* AnimBP;
 	//UFUNCTION(NetMulticast, Reliable, WithValidation)
 	//void MulticastThrow();
 
@@ -116,6 +183,9 @@ class ASYLUM_API ABaseChar : public ACharacter
 	void MultiInteract();
 
 public:
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetChange();
 
 	UPROPERTY(replicatedUsing = OnRep_Damage)
 	uint8 Damage { 0 };
