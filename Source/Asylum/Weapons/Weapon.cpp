@@ -114,7 +114,7 @@ void AWeapon::ExecuteAttack()
 	case EWeaponType::EWT_Gun:
 		
 		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
-		SpawnSoundParticle(StartTrace.GetLocation(), FireParticle, UseSound);
+		SpawnSoundParticle(StartTrace.GetLocation(), FireParticle, nullptr);
 
 
 		break;
@@ -139,7 +139,7 @@ void AWeapon::ExecuteAttack()
 		TArray<FHitResult> OggettiColpiti;
 
 		Found = GetWorld()->SweepMultiByChannel(OggettiColpiti, GetActorLocation(), GetActorLocation() + FVector(0, 0, 1), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(100.f), Params);
-		DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
+		//DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
 
 		SpawnSoundParticle(GetActorLocation(), FireParticle, UseSound);
 
@@ -164,7 +164,7 @@ void AWeapon::ExecuteAttack()
 		bCanAttack = false;
 		bSoundDone = false;
 
-		DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
+		//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
 		// se ho inserito il sistema particellari lo spawno sul punto di impatto
 		SpawnSoundParticle(Hit.Location, HitBodyParticle, HitBodySound);

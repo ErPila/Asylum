@@ -22,7 +22,7 @@ class ASYLUM_API USelect : public UUserWidget
 	UPROPERTY(meta = (BindWidget))
 	UButton* Luca;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY( meta = (BindWidget))
 	UButton* Start;
 
 	UPROPERTY(meta = (BindWidget))
