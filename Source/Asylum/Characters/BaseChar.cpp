@@ -101,11 +101,13 @@ void ABaseChar::BeginPlay()
 		   {
 			   Begin_Server(GS->SelectedCharacter); // call a  function to set up gfx on the server 
 			   GetMesh()->SetSkeletalMesh(CharMeshes[GS->SelectedCharacter]);
+			   GetMesh()->SetAnimClass(AnimBP[GS->SelectedCharacter]);
 			   SelectedMesh = GS->SelectedCharacter;
 		   }
 		   else	  
 		   {  
-			   GetMesh()->SetSkeletalMesh(CharMeshes[GS->SelectedCharacter]);		  
+			   GetMesh()->SetSkeletalMesh(CharMeshes[GS->SelectedCharacter]);
+			   GetMesh()->SetAnimClass(AnimBP[GS->SelectedCharacter]);
 			   SelectedMesh = GS->SelectedCharacter;
 		   }
 	   }
@@ -116,6 +118,7 @@ void ABaseChar::BeginPlay()
 void ABaseChar::Begin_Server_Implementation(uint8 Selected)
 {
 	GetMesh()->SetSkeletalMesh(CharMeshes[Selected]);	
+	GetMesh()->SetAnimClass(AnimBP[Selected]);
 	//Begin_Multicast(Selected);  
 	SelectedMesh = Selected;
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Blue, FString::Printf(TEXT("Change on server I %i"), Selected));

@@ -67,6 +67,9 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(EditAnyWhere, Category = "MyMadman")
 	TArray<USkeletalMesh*> CharMeshes;
 
+
+	UPROPERTY(EditAnyWhere, Category = "MyMadman")
+	TArray<UClass*> AnimBP;
 	//UFUNCTION(NetMulticast, Reliable, WithValidation)
 	//void MulticastThrow();
 
