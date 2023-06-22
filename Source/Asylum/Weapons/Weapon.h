@@ -148,7 +148,6 @@ private:
 	TArray<UNiagaraSystem*> HitSurfaceParticle;
 	UPROPERTY(EditAnywhere, Category = "Statistiche")
 	TArray<UNiagaraSystem*> HitBodyParticle;
-
 	UPROPERTY(VisibleAnyWhere,Category = "Montage")
 	TArray<UAnimMontage*> WepMontage;
 
@@ -185,7 +184,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	EWeaponState GetWeaponState() { return WeaponState; };
 
-	UAnimMontage* GetWepMontage(int8 index) { return WepMontage[index]; }
+	UAnimMontage* GetWepMontage(uint8 index) { return WepMontage[index]; }
 
 	// Sets default values for this actor's properties
 	AWeapon();

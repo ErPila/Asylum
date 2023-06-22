@@ -354,16 +354,16 @@ void ABaseChar::Attack_Execute()
 		break;
 		}
 
-		if (wep->GetWepMontage(0))
+		if (wep->GetWepMontage(SelectedMesh))
 		{
-			//UE_LOG(LogTemp, Error, TEXT("Quarto"));
+			UE_LOG(LogTemp, Error, TEXT("Sono nel montaggio dell'attacco"));
 			bCanFire = false;
 
 			auto MyAnim = GetMesh()->GetAnimInstance();
 
 			//UE_LOG(LogTemp, Warning, TEXT("rate %f"), wep->GetFireRate());
 
-			MyAnim->Montage_Play(wep->GetWepMontage(0),wep->GetFireRate());
+			MyAnim->Montage_Play(wep->GetWepMontage(SelectedMesh),wep->GetFireRate());
 			if (bRandAnim)
 			{
 				switch (FMath::RandRange(1, 3))
@@ -495,12 +495,12 @@ void ABaseChar::Drop_Execute()
 
 	if (EquippedWeapon)
 	{
-		if (DropWeaponMontage)
+		if (DropWeaponMontage[SelectedMesh])
 		{
 			bCanFire = false;
 
 			auto MyAnim = GetMesh()->GetAnimInstance();
-			MyAnim->Montage_Play(DropWeaponMontage);
+			MyAnim->Montage_Play(DropWeaponMontage[SelectedMesh]);
 
 			EquippedWeapon->SetOwner(nullptr);
 
@@ -811,13 +811,13 @@ void ABaseChar::SetTracedWeapon(AWeapon* NewWeapon)
 
 void ABaseChar::MultiInteract_Implementation()
 {
-	if (InteractMontage && bCanFire)
+	if (InteractMontage[SelectedMesh] && bCanFire)
 	{
 		bCanFire = false;
 
 		auto MyAnim = GetMesh()->GetAnimInstance();
 
-		MyAnim->Montage_Play(InteractMontage);
+		MyAnim->Montage_Play(InteractMontage[SelectedMesh]);
 	}
 }
 

@@ -147,10 +147,10 @@ class ASYLUM_API ABaseChar : public ACharacter
 	void ResetJump() { bCanJump = true; }	// resetto a vera can jump
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
-	UAnimMontage* DropWeaponMontage;
+	TArray <UAnimMontage*> DropWeaponMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
-	UAnimMontage* InteractMontage;
+	TArray<UAnimMontage*> InteractMontage;
 
 	// Yaw e Pitch da passare all'anim instance
 	float AO_Yaw;
@@ -183,6 +183,8 @@ class ASYLUM_API ABaseChar : public ACharacter
 	void MultiInteract();
 
 public:
+
+	FORCEINLINE uint8 GetSelectedMesh() { return SelectedMesh; }
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetChange();

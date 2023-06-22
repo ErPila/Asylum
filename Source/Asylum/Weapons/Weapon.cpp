@@ -274,7 +274,9 @@ void AWeapon::SetWeaponData()
 
 			WeaponMesh->SetCustomDepthStencilValue(TypeRow->DTCustomStencil);
 
-			//WepMontage = TypeRow->DTMontage;
+			WepMontage = TypeRow->DTMontage;
+			
+
 		}
 
 	}
