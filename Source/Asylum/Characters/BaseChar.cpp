@@ -79,13 +79,16 @@ void ABaseChar::SetCharType(uint8 Selected)
 			CharMeshes = TypeRow->DTMesh;
 			AnimBP = TypeRow->DTAnimBP;
 			Icon = TypeRow->DTIcon;
+			IconSanity50 = TypeRow->DTIconSanity50;
+			IconSanity0 = TypeRow->DTIconSanity0;
+			IconThorchOn = TypeRow->DTIconThorchOn;
+			IconThorchOff = TypeRow->DTIconThorchOff;
 			Torcia = TypeRow->DTTorch;
 			TorciaLocationOffset = TypeRow->DTLocationOffset;
 			TorciaRotationOffset = TypeRow->DTRotationOffset;
 			TorciaScaleOffset = TypeRow->DTScaleOffset;
 			LuceLocationOffset = TypeRow->DTLuceLocationOffset;
 			LuceRotationOffset = TypeRow->DTLuceRotationOffset;
-
 
 			GetMesh()->SetSkeletalMesh(CharMeshes);
 			GetMesh()->SetAnimClass(AnimBP);

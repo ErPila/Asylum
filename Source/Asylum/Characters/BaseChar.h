@@ -37,6 +37,26 @@ struct FCharTable : public FTableRowBase
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UTexture2D* DTIconSanity50 {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UTexture2D* DTIconSanity0 {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UTexture2D* DTIconThorchOn {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UTexture2D* DTIconThorchOff{
+		nullptr
+	};
+	
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		UStaticMesh* DTTorch {
 		nullptr
 	};
@@ -65,6 +85,7 @@ struct FCharTable : public FTableRowBase
 		FRotator DTLuceRotationOffset {
 		FRotator(0)
 	};
+	
 };
 
 UCLASS()
@@ -127,6 +148,18 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* Icon;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* IconSanity50;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* IconSanity0;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* IconThorchOn;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* IconThorchOff;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* Torcia;
@@ -250,12 +283,9 @@ protected:
 	UFUNCTION(Server, Reliable)  // we use this function in order to setup player mesh on the server
 	void Begin_Server(uint8 Selected);
 
-
 	void Equip_Button(const FInputActionValue& Value);
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Equip_Server(AWeapon* Traced);
-
-
 
 	void Attack_Button(const FInputActionValue& Value);
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -263,7 +293,6 @@ protected:
 	UFUNCTION(NetMulticast, Reliable, WithValidation)
 	void Attack_Multicast();
 	void Attack_Execute();
-
 
 	// server = il clien la chiama e viene eseguita sul server
   // multicast = il server la chiama e viene eseguita su tutti i client
@@ -290,8 +319,6 @@ protected:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerThrow();
-
-
 
 	void CrouchBP(const FInputActionValue& Value);
 
