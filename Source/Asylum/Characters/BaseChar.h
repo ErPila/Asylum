@@ -232,11 +232,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetChange();
 
-	UPROPERTY(replicatedUsing = OnRep_Damage)
-	uint8 Damage { 0 };
+	UPROPERTY(BlueprintReadWrite, replicatedUsing = OnRep_Damage)
+	float Damage { 0 };
 	
 	UFUNCTION()
-	void OnRep_Damage(uint8 PrevDamage);
+	void OnRep_Damage(float PrevDamage);
 
 	UFUNCTION()
 	void OnRep_EquipWeapon(AWeapon* EW);

@@ -13,46 +13,53 @@
 
 
 
-void AWeapon::SetWeaponType(uint8 RandMax)
+void AWeapon::SetWeaponType(uint8 RandMax, bool SelectWeapon, EWeaponType Tipo)
 {
 
-	auto rnd{ FMath::RandRange(0, RandMax) };
-
-	switch (rnd)
+	if (SelectWeapon)
 	{
-	case 0:
-	WeaponType = EWeaponType::EWT_Gun;
-	break;
+		WeaponType = Tipo;
+	}
+	else
+	{
+		auto rnd{ FMath::RandRange(0, RandMax) };
 
-	case 1:
-	WeaponType = EWeaponType::EWT_Club;
-	break;
+		switch (rnd)
+		{
+		case 0:
+			WeaponType = EWeaponType::EWT_Gun;
+			break;
 
-	case 2:
-	WeaponType = EWeaponType::EWT_Axe;
-	break;
+		case 1:
+			WeaponType = EWeaponType::EWT_Club;
+			break;
 
-	case 3:
-	WeaponType = EWeaponType::EWT_Pipe;
-	break;
+		case 2:
+			WeaponType = EWeaponType::EWT_Axe;
+			break;
 
-	case 4:
-	WeaponType = EWeaponType::EWT_Scissors;
-	break;
+		case 3:
+			WeaponType = EWeaponType::EWT_Pipe;
+			break;
 
-	case 5:
-	WeaponType = EWeaponType::EWT_Knife;
-	break;
+		case 4:
+			WeaponType = EWeaponType::EWT_Scissors;
+			break;
 
-	case 6:
-	WeaponType = EWeaponType::EWT_Molotov;
-	break;
+		case 5:
+			WeaponType = EWeaponType::EWT_Knife;
+			break;
 
-	case 7:
-	WeaponType = EWeaponType::EWT_Syringe;
-	break;
-	
+		case 6:
+			WeaponType = EWeaponType::EWT_Molotov;
+			break;
 
+		case 7:
+			WeaponType = EWeaponType::EWT_Syringe;
+			break;
+
+
+		}
 	}
 
 	SetWeaponData();
@@ -142,6 +149,7 @@ void AWeapon::ExecuteAttack()
 		//DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
 
 		SpawnSoundParticle(GetActorLocation(), FireParticle, UseSound);
+		UE_LOG(LogTemp, Error, TEXT("Nella Molotov"));
 
 		for (int i = 0; i < OggettiColpiti.Num(); i++)
 		{
@@ -151,10 +159,10 @@ void AWeapon::ExecuteAttack()
 				break;
 			}
 		}
+
 		break;
 
 	}
-
 
 	auto Player = Cast<ABaseChar>(Hit.GetActor());
 	if (Player)
@@ -486,7 +494,6 @@ void AWeapon::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrim
 			GetWorldTimerManager().ClearTimer(Time);
 		}
 	}
-	
 }
 
 void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

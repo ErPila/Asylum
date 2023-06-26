@@ -185,7 +185,7 @@ public:
 	UTexture2D* Icon;
 	
 	UFUNCTION(BlueprintCallable)
-	void SetWeaponType(uint8 RandMax);
+	void SetWeaponType(uint8 RandMax,bool SelectWeapon = false, EWeaponType Tipo = EWeaponType::EWT_MAX);
 
 	UFUNCTION(BlueprintPure)
 	EWeaponState GetWeaponState() { return WeaponState; };

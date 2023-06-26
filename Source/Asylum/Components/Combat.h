@@ -63,6 +63,7 @@ class ASYLUM_API UCombat : public UActorComponent
 
 public:	
 
+	UFUNCTION(BlueprintCallable)
 	void ReceiveDamage(float Damage);
 
 	UFUNCTION(NetMulticast, Reliable)

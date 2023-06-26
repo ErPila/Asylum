@@ -824,7 +824,7 @@ void ABaseChar::MultiInteract_Implementation()
 	}
 }
 
-void ABaseChar::OnRep_Damage(uint8 PrevDamage)
+void ABaseChar::OnRep_Damage(float PrevDamage)
 {
 	GetCombat()->Actual_Hp -= Damage;
 	UE_LOG(LogTemp, Warning, TEXT("On Rep Damage"));
