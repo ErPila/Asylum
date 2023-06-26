@@ -456,6 +456,7 @@ void AWeapon::DropTimer()
 		if (Explode)
 		{
 			ExecuteAttack();
+			SpawnFire();
 			Destroy();
 		}
 		else SetWeaponState(EWeaponState::EWS_Initial);

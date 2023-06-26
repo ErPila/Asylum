@@ -160,7 +160,13 @@ private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void SpawnSoundParticle(FVector Position, const TArray<UNiagaraSystem*> &Particle, USoundCue* Sound = nullptr);
 
+
+	
+
 public:	
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Fire")
+		void SpawnFire();
 
 	UFUNCTION()
 	void OnRep_WeaponState(EWeaponState OldState);
