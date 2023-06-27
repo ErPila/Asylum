@@ -33,7 +33,7 @@ class ASYLUM_API UCombat : public UActorComponent
 {
 	GENERATED_BODY()
 
-    
+
 	friend class ABaseChar; // in questo modo  il character può accedere
 	// a variabili private del componente
 
@@ -62,8 +62,6 @@ class ASYLUM_API UCombat : public UActorComponent
 	
 
 public:	
-
-
 
 	UFUNCTION(BlueprintCallable)
 	void ReceiveDamage(float Damage);
