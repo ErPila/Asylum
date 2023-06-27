@@ -11,6 +11,7 @@
 
 
 
+
 void UCombat::ReceiveDamage(float Damage)
 {
 	Actual_Hp -= Damage;
@@ -168,6 +169,8 @@ bool UCombat::CollectWeapon(AWeapon* WeaponToCollect)
 	
 	return true;
 }
+
+
 
 
 

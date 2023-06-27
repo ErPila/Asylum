@@ -157,6 +157,8 @@ private:
 
 	FTimerHandle Time;
 
+	FTimerHandle TimeToDestroy;
+
 	UFUNCTION(NetMulticast, Unreliable)
 	void SpawnSoundParticle(FVector Position, const TArray<UNiagaraSystem*> &Particle, USoundCue* Sound = nullptr);
 
@@ -213,6 +215,8 @@ public:
 	bool Explode{ false };
 
 	void DropTimer();
+
+	void DestroyTimer();
 
 	FORCEINLINE USphereComponent* GetCollisionSphere() { return CollisionSphere; };
 
