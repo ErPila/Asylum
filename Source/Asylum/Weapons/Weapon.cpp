@@ -108,6 +108,9 @@ void AWeapon::Tick(float DeltaTime)
 
 void AWeapon::ExecuteAttack()
 {
+
+	if (GetWorldTimerManager().IsTimerActive(TimeToDestroy)) return;
+
 	FHitResult Hit;
 	FTransform StartTrace = WeaponMesh->GetSocketTransform(FName("DamageStartSocket"), RTS_World);
 	FTransform EndTrace = WeaponMesh->GetSocketTransform(FName("DamageEndSocket"), RTS_World);
@@ -115,6 +118,7 @@ void AWeapon::ExecuteAttack()
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 	bool Found = false;
+	
 
 	switch (WeaponType)
 	{
@@ -122,7 +126,6 @@ void AWeapon::ExecuteAttack()
 		
 		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
 		SpawnSoundParticle(StartTrace.GetLocation(), FireParticle, nullptr);
-
 
 		break;
 	case EWeaponType::EWT_Club:
@@ -145,6 +148,9 @@ void AWeapon::ExecuteAttack()
 
 		TArray<FHitResult> OggettiColpiti;
 
+		GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
+		
+
 		Found = GetWorld()->SweepMultiByChannel(OggettiColpiti, GetActorLocation(), GetActorLocation() + FVector(0, 0, 1), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(100.f), Params);
 		//DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
 
@@ -159,9 +165,7 @@ void AWeapon::ExecuteAttack()
 				break;
 			}
 		}
-
 		break;
-
 	}
 
 	auto Player = Cast<ABaseChar>(Hit.GetActor());
@@ -193,15 +197,11 @@ void AWeapon::ExecuteAttack()
 		}	
 	}
 
+	
+	
 	//DrawDebugLine(GetWorld(), StartTrace.GetLocation(), EndTrace.GetLocation(), (Player ? FColor::Green : FColor::Red), false, 5.f);
 }
 
-/*
-void AWeapon::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-	//SetWeaponData();
-}*/
 
 void AWeapon::SetWeaponData()
 {
@@ -419,6 +419,8 @@ void AWeapon::SetWeaponStateServer_Implementation(EWeaponState NewState)
 
 void AWeapon::SpawnSoundParticle_Implementation(FVector Position, const TArray<UNiagaraSystem*> &Particle, USoundCue* Sound)
 {
+	if(HasAuthority()) 	UE_LOG(LogTemp, Warning, TEXT("Ciao Sono Server"))
+	else UE_LOG(LogTemp, Warning, TEXT("Ciao Sono Client"));
 
 	if (Sound)
 	{
@@ -464,8 +466,6 @@ void AWeapon::DropTimer()
 		if (Explode)
 		{
 			ExecuteAttack();
-			SpawnFire();
-			Destroy();
 		}
 		else SetWeaponState(EWeaponState::EWS_Initial);
 		
@@ -473,6 +473,11 @@ void AWeapon::DropTimer()
 		break;
 	}
 	
+}
+void AWeapon::DestroyTimer()
+{
+	SpawnFire();
+	Destroy();
 }
 
 void AWeapon::ShowWidget(bool Visibility)
