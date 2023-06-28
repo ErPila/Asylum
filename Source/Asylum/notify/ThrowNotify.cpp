@@ -4,12 +4,13 @@
 #include "ThrowNotify.h"
 #include "Asylum/Characters/BaseChar.h"
 
-void UThrowNotify::ThrowItem(USkeletalMeshComponent* ActualMesh)
+void UThrowNotify::ThrowItem(USkeletalMeshComponent* ActualMesh, float Intensity)
 {
 	auto MyChar = Cast<ABaseChar>(ActualMesh->GetOwner());
 
 	if (MyChar)
 	{
-		MyChar->Throw();
+		MyChar->ThrowIntensity = Intensity;
+		MyChar->Throw();	
 	}
 }

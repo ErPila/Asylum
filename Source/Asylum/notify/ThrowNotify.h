@@ -15,7 +15,7 @@ class ASYLUM_API UThrowNotify : public UAnimNotify
 	GENERATED_BODY()
 
 	UFUNCTION(BlueprintCallable)
-	void ThrowItem(USkeletalMeshComponent* ActualMesh);
+	void ThrowItem(USkeletalMeshComponent* ActualMesh, float Intensity = 1000);
 
 
 

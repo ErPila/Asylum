@@ -13,7 +13,6 @@
 
 void UCombat::ReceiveDamage(float Damage)
 {
-	//Actual_Hp -= Damage;
 	ReceiveDamage_Multicast(Damage);
 }
 
@@ -105,8 +104,7 @@ void UCombat::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 	{
 		Actual_Sanity -= 0.5 * DeltaTime;
 	}
-
-	if (Actual_Sanity <= 0)
+	else
 	{
 		Actual_Hp -= 0.5 * DeltaTime;
 	}

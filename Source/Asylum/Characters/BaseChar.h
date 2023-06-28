@@ -225,7 +225,11 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiInteract();
 
+	
+
 public:
+
+	float ThrowIntensity{ 0.f };
 
 	FORCEINLINE uint8 GetSelectedMesh() { return SelectedMesh; }
 
@@ -276,6 +280,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void AttivaDisattivaTorcia();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void DisattivaMovimenti();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -317,7 +324,7 @@ protected:
 	//UFUNCTION(BlueprintCallable)
 	
 
-	UFUNCTION(Server, Reliable, WithValidation)
+	UFUNCTION(Server, Reliable)
 	void ServerThrow();
 
 	void CrouchBP(const FInputActionValue& Value);

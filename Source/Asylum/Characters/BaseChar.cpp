@@ -141,11 +141,28 @@ bool ABaseChar::IsEquipped()
 	return EquippedWeapon ? true : false;
 }
 
+void ABaseChar::DisattivaMovimenti_Implementation()
+{
+	if (GetCharacterMovement()->MaxWalkSpeed > 0)
+	{
+		FTimerHandle Time;
+		GetWorldTimerManager().SetTimer(Time, this, &ABaseChar::DisattivaMovimenti, 1.f);
+		GetCharacterMovement()->MaxWalkSpeed = 0;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = GetCombat()->GetStandWalkSpeed();
+	}
+
+
+}
+
 // Called when the game starts or when spawned
 void ABaseChar::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
 	AddContext(MC_Combat, 0);
 
 	StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
@@ -330,6 +347,9 @@ void ABaseChar::Attack_Execute()
 		case EWeaponType::EWT_Wire:
 		case EWeaponType::EWT_Cans:
 		GetCharacterMovement()->MaxWalkSpeed = 0;
+		wep->Explode = true;
+		CombatComponent->RemoveFromBackPack(nullptr, CombatComponent->GetBackpackSlot());
+
 		break;
 
 		case EWeaponType::EWT_Molotov:
@@ -576,6 +596,7 @@ void ABaseChar::Throw()
 
 void ABaseChar::ServerThrow_Implementation()	// avviene per la copia del personaggio che sta sul server
 {
+	/*
 	if (HasAuthority())
 	{
 		if (IsLocallyControlled()) { UE_LOG(LogTemp, Error, TEXT("Throw Server Local")); }
@@ -587,6 +608,7 @@ void ABaseChar::ServerThrow_Implementation()	// avviene per la copia del persona
 		else                         UE_LOG(LogTemp, Error, TEXT("Throw client remote"));
 
 	}
+	*/
 
 	if (EquippedWeapon)
 	{
@@ -596,7 +618,7 @@ void ABaseChar::ServerThrow_Implementation()	// avviene per la copia del persona
 
 		if (EW->GetRootSphere()->IsSimulatingPhysics())
 		{
-			EW->GetRootSphere()->AddImpulse(GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
+			EW->GetRootSphere()->AddImpulse(GetActorForwardVector() * ThrowIntensity * EW->GetRootSphere()->GetMass());
 		}
 		
 		EquippedWeapon = nullptr;
@@ -606,13 +628,6 @@ void ABaseChar::ServerThrow_Implementation()	// avviene per la copia del persona
 	//bUseControllerRotationYaw = false;
 }
 
-
-
-bool ABaseChar::ServerThrow_Validate()
-{
-
-	return true;
-}
 
 
 // Called every frame
@@ -780,7 +795,7 @@ bool ABaseChar::ItemTrace(FHitResult& OutHit)
 
 	if (UGameplayStatics::DeprojectScreenToWorld(MC, ScreenCenter, WorldPos, WorldDir))
 	{
-		auto EndPoint{ WorldPos + WorldDir * 500.f };
+		auto EndPoint{ WorldPos + WorldDir * 200.f };
 		FCollisionQueryParams Params;
 		// metto il character tra gli oggetti ignorati per non interferire col trace
 		Params.AddIgnoredActor(this);	
@@ -851,13 +866,9 @@ void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
 
 			if (EW->GetRootSphere()->IsSimulatingPhysics())
 			{
-				EW->GetRootSphere()->AddImpulse(GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
+				EW->GetRootSphere()->AddImpulse(GetActorForwardVector() * ThrowIntensity * EW->GetRootSphere()->GetMass());
 			}
-			else
-			{
-				//EW->GetRootSphere()->SetSimulatePhysics(true);
-				//EW->GetRootSphere()->AddImpulse(Character->GetActorForwardVector() * 1000 * EW->GetRootSphere()->GetMass());
-			}
+			
 
 		}
 	}
