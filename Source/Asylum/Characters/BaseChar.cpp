@@ -353,6 +353,7 @@ void ABaseChar::Attack_Execute()
 		break;
 
 		case EWeaponType::EWT_Molotov:
+		case EWeaponType::EWT_Bomb:
 		GetCharacterMovement()->MaxWalkSpeed = 200;
 		wep->Explode = true;
 		CombatComponent->RemoveFromBackPack(nullptr, CombatComponent->GetBackpackSlot());

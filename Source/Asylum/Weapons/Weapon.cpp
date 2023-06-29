@@ -58,6 +58,14 @@ void AWeapon::SetWeaponType(uint8 RandMax, bool SelectWeapon, EWeaponType Tipo)
 			WeaponType = EWeaponType::EWT_Syringe;
 			break;
 
+		case 8:
+			WeaponType = EWeaponType::EWT_Trap;
+			break;
+
+		case 9:
+			WeaponType = EWeaponType::EWT_Bomb;
+			break;
+
 
 		}
 	}
@@ -77,6 +85,11 @@ AWeapon::AWeapon()
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetupAttachment(RootSphere);
+
+	SecondaryMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SecondaryWeaponMesh"));
+	SecondaryMesh->SetupAttachment(WeaponMesh);
+	SecondaryMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);	// tutti i canali in block
+	SecondaryMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);	// tutti i canali in block
 	//WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);	// ignora il pawn
@@ -138,12 +151,23 @@ void AWeapon::ExecuteAttack()
 		Found = GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
 
 		break;
+	case EWeaponType::EWT_Bomb:
 	case EWeaponType::EWT_Trap:
+		
+		Params.ClearIgnoredActors();
+		Found = GetWorld()->SweepMultiByChannel(Colpiti, GetActorLocation() + FVector(0, 0, 15), GetActorLocation() + FVector(0, 0, 16), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(30.f), Params);
+		DrawDebugSphere(GetWorld(), GetActorLocation() + FVector(0, 0, 15), 20.f, 8, (Found ? FColor::Blue : FColor::Red), false, 2);
 
-		Found = GetWorld()->SweepSingleByChannel(Hit, GetActorLocation() + FVector(0, 0, 15), GetActorLocation() + FVector(0, 0, 16), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
 		//SpawnSoundParticle(GetActorLocation(), FireParticle, UseSound);
 
-		DrawDebugSphere(GetWorld(), GetActorLocation() + FVector(0, 0, 15), 20.f, 8, (Found ? FColor::Blue : FColor::Red), false, 2);
+		for (int i = 0; i < Colpiti.Num(); i++)
+		{
+			if (Cast<ABaseChar>(Colpiti[i].GetActor()))
+			{
+				Hit = Colpiti[i];
+				break;
+			}
+		}
 
 		break;
 	case EWeaponType::EWT_Wire:
@@ -153,19 +177,17 @@ void AWeapon::ExecuteAttack()
 	case EWeaponType::EWT_Molotov:
 
 		GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
-		
-		TArray<FHitResult> OggettiColpiti;
-		Found = GetWorld()->SweepMultiByChannel(OggettiColpiti, GetActorLocation(), GetActorLocation() + FVector(0, 0, 1), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(100.f), Params);
+	
+		Found = GetWorld()->SweepMultiByChannel(Colpiti, GetActorLocation(), GetActorLocation() + FVector(0, 0, 1), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(100.f), Params);
 		//DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
 
 		SpawnSoundParticle(GetActorLocation(), FireParticle, UseSound);
-		UE_LOG(LogTemp, Error, TEXT("Nella Molotov"));
 
-		for (int i = 0; i < OggettiColpiti.Num(); i++)
+		for (int i = 0; i < Colpiti.Num(); i++)
 		{
-			if (Cast<ABaseChar>(OggettiColpiti[i].GetActor()))
+			if (Cast<ABaseChar>(Colpiti[i].GetActor()))
 			{
-				Hit = OggettiColpiti[i];
+				Hit = Colpiti[i];
 				break;
 			}
 		}
@@ -180,24 +202,32 @@ void AWeapon::ExecuteAttack()
 		bCanAttack = false;
 		bSoundDone = false;
 
-		//UE_LOG(LogTemp, Error, TEXT("Colpito"));
-		//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
-
-		// se ho inserito il sistema particellari lo spawno sul punto di impatto
-		SpawnSoundParticle(Hit.Location, HitBodyParticle, HitBodySound);
-
 		if (WeaponType == EWeaponType::EWT_Trap)
 		{
 			Player->DisattivaMovimenti();
 			GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
+			if (Animation) WeaponMesh->PlayAnimation(Animation, false);
 		}
-		//Player->GetCharacterMovement()->MaxWalkSpeed = 250;
+		
+		if (WeaponType == EWeaponType::EWT_Bomb)
+		{
+			GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
+			SpawnSoundParticle(Hit.Location, FireParticle, UseSound);
+		}
+		
+
+		// se ho inserito il sistema particellari lo spawno sul punto di impatto
+		SpawnSoundParticle(Hit.Location, HitBodyParticle, HitBodySound);
+
+		//UE_LOG(LogTemp, Error, TEXT("Colpito"));
+		//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
 		// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
 		Player->Damage = Damage;
 
 		// funzione per applicare il danno se siamo il server
 		Player->GetCombat()->ReceiveDamage(Damage);
+
 	}
 	else if (!bSoundDone)
 	{
@@ -263,6 +293,9 @@ void AWeapon::SetWeaponData()
 		case EWeaponType::EWT_Molotov:
 			TypeRow = WeaponDT->FindRow<FWeaponTable>(FName("Molotov"), TEXT(""));
 			break;
+		case EWeaponType::EWT_Bomb:
+			TypeRow = WeaponDT->FindRow<FWeaponTable>(FName("Bomb"), TEXT(""));
+			break;
 
 		}
 
@@ -280,6 +313,8 @@ void AWeapon::SetWeaponData()
 			FireParticle = TypeRow->DTFireParticle;
 			HitSurfaceParticle = TypeRow->DTHitSurfaceParticle;
 			HitBodyParticle = TypeRow->DTHitBodyParticle;
+			Animation = TypeRow->DTAnimation;
+
 
 			//UE_LOG(LogTemp, Error, TEXT("rate %i"), HitBodyParticle.Num());
 
@@ -289,6 +324,8 @@ void AWeapon::SetWeaponData()
 			WeaponMesh->SetRelativeLocation(TypeRow->DTLocationOffset);
 			WeaponMesh->SetRelativeRotation(TypeRow->DTRotationOffset);
 			WeaponMesh->SetRelativeScale3D(TypeRow->DTScaleOffset);
+
+			SecondaryMesh->SetStaticMesh(TypeRow->DTSecondaryMesh);
 
 			CollisionSphere->SetRelativeScale3D(FVector(1) / TypeRow->DTScaleOffset);
 
@@ -474,14 +511,15 @@ void AWeapon::DropTimer()
 		break;
 	case EWeaponType::EWT_Cans:
 		break;
+	case EWeaponType::EWT_Bomb:
 	case EWeaponType::EWT_Trap:
 		if (Explode)
 		{
 			WeaponMesh->SetSimulatePhysics(false);
-			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 			RootSphere->SetSimulatePhysics(false);
-			RootSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			RootSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 			//RootSphere->BodyInstance.bLockXRotation = false;
 			//RootSphere->BodyInstance.bLockYRotation = false;
@@ -501,9 +539,9 @@ void AWeapon::DropTimer()
 			ExecuteAttack();
 		}
 		else SetWeaponState(EWeaponState::EWS_Initial);
-		
-
+	
 		break;
+
 	}
 	
 }
@@ -520,10 +558,9 @@ void AWeapon::DestroyTimer()
 	case EWeaponType::EWT_Molotov:
 		SpawnFire();
 		break;
-	case EWeaponType::EWT_MAX:
+	case EWeaponType::EWT_Bomb:
 		break;
-	default:
-		break;
+
 	}
 	
 	Destroy();

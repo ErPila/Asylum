@@ -14,6 +14,7 @@ enum class EWeaponType : uint8
 	EWT_Wire     UMETA(DisplayName = "Wire"),
 	EWT_Cans     UMETA(DisplayName = "Cans"),
 	EWT_Molotov  UMETA(DisplayName = "Molotov"),
+	EWT_Bomb	 UMETA(DisplayName = "Bomb"),
 	EWT_MAX      UMETA(DisplayName = "DefualtMAX")
 };
 

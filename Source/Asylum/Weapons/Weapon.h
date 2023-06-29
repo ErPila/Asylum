@@ -56,6 +56,11 @@ struct FWeaponTable : public FTableRowBase
 	};
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UStaticMesh* DTSecondaryMesh {
+		nullptr
+	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	TArray<class UNiagaraSystem*> DTFireParticle {
 		nullptr 
 	};
@@ -94,6 +99,11 @@ struct FWeaponTable : public FTableRowBase
 	TArray<UAnimMontage*> DTMontage {
 		nullptr
 	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	UAnimationAsset* DTAnimation {
+		nullptr
+	};
 };
 
 
@@ -111,6 +121,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	USkeletalMeshComponent* WeaponMesh { nullptr };
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	UStaticMeshComponent* SecondaryMesh{ nullptr };
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	USphereComponent* CollisionSphere { nullptr };
@@ -150,6 +163,8 @@ private:
 	TArray<UNiagaraSystem*> HitBodyParticle;
 	UPROPERTY(VisibleAnyWhere,Category = "Montage")
 	TArray<UAnimMontage*> WepMontage;
+	UPROPERTY(VisibleAnyWhere, Category = "Montage")
+	UAnimationAsset* Animation;
 
 	bool bCanAttack{ false };
 
