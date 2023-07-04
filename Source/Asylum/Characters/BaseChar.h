@@ -277,6 +277,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, Replicated)
 	bool bHaveTorch{ false };
 
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	bool bTorchOn{ false };
+
+	UFUNCTION(Server, Reliable)
+	void ChangeThorchStateServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangeThorchStateMulticast();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void AttivaDisattivaTorcia();
 

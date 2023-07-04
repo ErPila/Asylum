@@ -153,7 +153,7 @@ void AWeapon::ExecuteAttack()
 		break;
 	case EWeaponType::EWT_Bomb:
 	case EWeaponType::EWT_Trap:
-		
+	{
 		Params.ClearIgnoredActors();
 		Found = GetWorld()->SweepMultiByChannel(Colpiti, GetActorLocation() + FVector(0, 0, 15), GetActorLocation() + FVector(0, 0, 16), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(30.f), Params);
 		DrawDebugSphere(GetWorld(), GetActorLocation() + FVector(0, 0, 15), 20.f, 8, (Found ? FColor::Blue : FColor::Red), false, 2);
@@ -168,18 +168,25 @@ void AWeapon::ExecuteAttack()
 				break;
 			}
 		}
+	}
+	break;
 
-		break;
 	case EWeaponType::EWT_Wire:
 		break;
 	case EWeaponType::EWT_Cans:
 		break;
 	case EWeaponType::EWT_Molotov:
 
+		if (GetWorldTimerManager().IsTimerActive(TimeToDestroy)) return;
+		bCanAttack = false;
 		GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
-	
+		
 		Found = GetWorld()->SweepMultiByChannel(Colpiti, GetActorLocation(), GetActorLocation() + FVector(0, 0, 1), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(100.f), Params);
-		//DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 8, FColor::Blue, true, 5.f);
+
+		if (FireBP && WeaponType == EWeaponType::EWT_Molotov)
+		{
+			GetWorld()->SpawnActor<AActor>(FireBP, GetActorLocation(), FRotator(0));
+		}
 
 		SpawnSoundParticle(GetActorLocation(), FireParticle, UseSound);
 
@@ -482,6 +489,8 @@ void AWeapon::SpawnSoundParticle_Implementation(FVector Position, const TArray<U
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Particle[rnd], Position);
 	}
+
+	
 }
 
 void AWeapon::OnRep_WeaponState(EWeaponState OldState)
@@ -536,7 +545,7 @@ void AWeapon::DropTimer()
 	case EWeaponType::EWT_Molotov:
 		if (Explode)
 		{
-			ExecuteAttack();
+			bCanAttack = true;
 		}
 		else SetWeaponState(EWeaponState::EWS_Initial);
 	
@@ -556,7 +565,6 @@ void AWeapon::DestroyTimer()
 	case EWeaponType::EWT_Cans:
 		break;
 	case EWeaponType::EWT_Molotov:
-		SpawnFire();
 		break;
 	case EWeaponType::EWT_Bomb:
 		break;

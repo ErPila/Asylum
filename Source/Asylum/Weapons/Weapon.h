@@ -166,6 +166,9 @@ private:
 	UPROPERTY(VisibleAnyWhere, Category = "Montage")
 	UAnimationAsset* Animation;
 
+	UPROPERTY(EditAnywhere, Category = "Fuoco")
+	TSubclassOf<AActor> FireBP;
+
 	bool bCanAttack{ false };
 
 	bool bSoundDone{ false };

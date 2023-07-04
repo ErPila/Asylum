@@ -141,6 +141,8 @@ bool ABaseChar::IsEquipped()
 	return EquippedWeapon ? true : false;
 }
 
+
+
 void ABaseChar::DisattivaMovimenti_Implementation()
 {
 	if (GetCharacterMovement()->MaxWalkSpeed > 0)
@@ -567,9 +569,24 @@ void ABaseChar::Slot3_Button(const FInputActionValue& Value)
 void ABaseChar::TorchButton(const FInputActionValue& Value)
 {
 	// se ho la torcia posso usarla
-	if(bHaveTorch) AttivaDisattivaTorcia();
+	if (bHaveTorch)
+	{
+		ChangeThorchStateServer();
+		AttivaDisattivaTorcia();
+	}
 	//UE_LOG(LogTemp, Warning, TEXT("Tasto Torcia"));
 
+}
+
+void ABaseChar::ChangeThorchStateServer_Implementation()
+{
+	ChangeThorchStateMulticast();
+}
+
+void ABaseChar::ChangeThorchStateMulticast_Implementation()
+{
+	if (!bTorchOn) bTorchOn = true;
+	else bTorchOn = false;
 }
 
 void ABaseChar::ChooseWeapon(uint8 selected)
