@@ -156,7 +156,8 @@ void AWeapon::ExecuteAttack()
 	{
 		Params.ClearIgnoredActors();
 		Found = GetWorld()->SweepMultiByChannel(Colpiti, GetActorLocation() + FVector(0, 0, 15), GetActorLocation() + FVector(0, 0, 16), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(30.f), Params);
-		DrawDebugSphere(GetWorld(), GetActorLocation() + FVector(0, 0, 15), 20.f, 8, (Found ? FColor::Blue : FColor::Red), false, 2);
+		
+		//DrawDebugSphere(GetWorld(), GetActorLocation() + FVector(0, 0, 15), 20.f, 8, (Found ? FColor::Blue : FColor::Red), false, 2);
 
 		//SpawnSoundParticle(GetActorLocation(), FireParticle, UseSound);
 
@@ -214,6 +215,11 @@ void AWeapon::ExecuteAttack()
 			Player->DisattivaMovimenti();
 			GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
 			if (Animation) WeaponMesh->PlayAnimation(Animation, false);
+		}
+		else
+		{
+			auto MyPlayer = Cast<ABaseChar>(GetOwner());
+			if(MyPlayer) MyPlayer->DisattivaMovimenti();
 		}
 		
 		if (WeaponType == EWeaponType::EWT_Bomb)

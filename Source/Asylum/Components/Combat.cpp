@@ -19,6 +19,22 @@ void UCombat::ReceiveDamage(float Damage)
 void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
 {
 	Actual_Hp -= Damage;
+
+	
+	
+
+	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("Ricevo danni"));
+
+	auto MyAnim = Character->GetMesh()->GetAnimInstance();
+	MyAnim->Montage_Play(Character->HitReact);
+	switch (FMath::RandRange(1, 4))
+	{
+	case 1:	MyAnim->Montage_JumpToSection("Primo"); break;
+	case 2:	MyAnim->Montage_JumpToSection("Secondo"); break;
+	case 3:	MyAnim->Montage_JumpToSection("Terzo"); break;
+	case 4:	MyAnim->Montage_JumpToSection("Quarto"); break;
+	}
+	
 }
 
 AWeapon* UCombat::GetFromBackPack(int32 index)
@@ -121,7 +137,7 @@ void UCombat::EquipWeapon(AWeapon* WeaponToEquip)
 
 	if (!Character || !WeaponToEquip) return;	// se manca uno dei due elementi indispensalibi, esco
 
-	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("OnReplication"));
+	//GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("OnReplication"));
 	if (Character->HasAuthority())  UE_LOG(LogTemp, Warning, TEXT("equipping the weapons %s"), *Character->GetName());
 
 	

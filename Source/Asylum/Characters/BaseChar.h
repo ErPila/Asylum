@@ -85,6 +85,11 @@ struct FCharTable : public FTableRowBase
 		FRotator DTLuceRotationOffset {
 		FRotator(0)
 	};
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+		UAnimMontage* DTHitReact {
+		nullptr
+	};
 	
 };
 
@@ -179,9 +184,11 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FRotator LuceRotationOffset;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HitReact;
+
 	
-	//UFUNCTION(NetMulticast, Reliable, WithValidation)
-	//void MulticastThrow();
+	
 
 	bool bIsInAir;
 

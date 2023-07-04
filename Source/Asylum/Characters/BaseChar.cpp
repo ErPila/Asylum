@@ -89,6 +89,7 @@ void ABaseChar::SetCharType(uint8 Selected)
 			TorciaScaleOffset = TypeRow->DTScaleOffset;
 			LuceLocationOffset = TypeRow->DTLuceLocationOffset;
 			LuceRotationOffset = TypeRow->DTLuceRotationOffset;
+			HitReact = TypeRow->DTHitReact;
 
 			GetMesh()->SetSkeletalMesh(CharMeshes);
 			GetMesh()->SetAnimClass(AnimBP);
@@ -147,8 +148,8 @@ void ABaseChar::DisattivaMovimenti_Implementation()
 {
 	if (GetCharacterMovement()->MaxWalkSpeed > 0)
 	{
-		FTimerHandle Time;
-		GetWorldTimerManager().SetTimer(Time, this, &ABaseChar::DisattivaMovimenti, 1.f);
+		FTimerHandle BlockTimer;
+		GetWorldTimerManager().SetTimer(BlockTimer, this, &ABaseChar::DisattivaMovimenti, 1.f);
 		GetCharacterMovement()->MaxWalkSpeed = 0;
 	}
 	else
@@ -860,7 +861,22 @@ void ABaseChar::MultiInteract_Implementation()
 void ABaseChar::OnRep_Damage(float PrevDamage)
 {
 	GetCombat()->Actual_Hp -= Damage;
-	UE_LOG(LogTemp, Warning, TEXT("On Rep Damage"));
+	//UE_LOG(LogTemp, Warning, TEXT("On Rep Damage"));
+
+	/*
+	auto MyAnim = GetMesh()->GetAnimInstance();
+
+	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("Ricevo danni"));
+
+	MyAnim->Montage_Play(HitReact);
+	switch (FMath::RandRange(1, 4))
+	{
+	case 1:	MyAnim->Montage_JumpToSection("Primo"); break;
+	case 2:	MyAnim->Montage_JumpToSection("Secondo"); break;
+	case 3:	MyAnim->Montage_JumpToSection("Terzo"); break;
+	case 4:	MyAnim->Montage_JumpToSection("Quarto"); break;
+	}
+	*/
 }
 
 // on rep viene eseguito su tutti i client ma non sul server
