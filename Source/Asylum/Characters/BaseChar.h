@@ -123,15 +123,17 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 	// variabile replicata legata ad una funzione
 	// ogni volta che tale variabile cambia di valore la funzione relativa viene eseguita
-	UPROPERTY(ReplicatedUsing = OnRep_ChangeMesh)
+	//UPROPERTY(ReplicatedUsing = OnRep_ChangeMesh)
 	uint8 SelectedMesh { 0 };
 
-	UFUNCTION()
-	void OnRep_ChangeMesh();
+	//UFUNCTION()
+	//void OnRep_ChangeMesh();
 
 	//UPROPERTY(ReplicatedUsing = OnRep_TracedWeapon)
 	AWeapon* TracedWeapon;
 
+
+	UFUNCTION(NetMulticast,Reliable) // selezionato il personaggio la tabella viene letta in multicast
 	void SetCharType(uint8 Selected);
 
 	UFUNCTION(BlueprintCallable,Category = "Sanity")
@@ -166,25 +168,25 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconThorchOff;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* Torcia;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FVector TorciaLocationOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FRotator TorciaRotationOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FVector TorciaScaleOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FVector LuceLocationOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FRotator LuceRotationOffset;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitReact;
 
 	
@@ -243,11 +245,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetChange();
 
-	UPROPERTY(BlueprintReadWrite, replicatedUsing = OnRep_Damage)
-	float Damage { 0 };
+	//UPROPERTY(BlueprintReadWrite, replicatedUsing = OnRep_Damage)
+	//float Damage { 0 };
 	
-	UFUNCTION()
-	void OnRep_Damage(float PrevDamage);
+	//UFUNCTION()
+	//void OnRep_Damage(float PrevDamage);
 
 	UFUNCTION()
 	void OnRep_EquipWeapon(AWeapon* EW);
@@ -302,6 +304,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void DelayStart();
 
 	UFUNCTION(Server, Reliable)  // we use this function in order to setup player mesh on the server
 	void Begin_Server(uint8 Selected);

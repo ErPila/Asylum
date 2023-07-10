@@ -33,15 +33,17 @@
 void ABaseChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ThisClass, SelectedMesh); // replica sempre la variabile
+	//DOREPLIFETIME(ThisClass, SelectedMesh); // replica sempre la variabile
 	DOREPLIFETIME(ThisClass, EquippedWeapon);
-	DOREPLIFETIME(ThisClass, Damage);
 	//DOREPLIFETIME(ThisClass, TracedWeapon);
 //	DOREPLIFETIME_CONDITION(ThisClass, SelectedMesh, COND_OwnerOnly); // replica sempre la variabile
 }
 
-void ABaseChar::SetCharType(uint8 Selected)
+void ABaseChar::SetCharType_Implementation(uint8 Selected)
 {
+
+	SelectedMesh = Selected; 
+
 	FString TablePath(TEXT("DataTable'/Game/_Assets/Structures/DataTables/DT_CharType.DT_CharType'"));
 
 	UDataTable* CharDT = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *TablePath));
@@ -90,11 +92,11 @@ void ABaseChar::SetCharType(uint8 Selected)
 			LuceLocationOffset = TypeRow->DTLuceLocationOffset;
 			LuceRotationOffset = TypeRow->DTLuceRotationOffset;
 			HitReact = TypeRow->DTHitReact;
+			
 
 			GetMesh()->SetSkeletalMesh(CharMeshes);
 			GetMesh()->SetAnimClass(AnimBP);
-
-			UE_LOG(LogTemp, Warning, TEXT(" Torcia %s"), *Torcia->GetName());
+	
 
 			SetChange();
 
@@ -171,31 +173,26 @@ void ABaseChar::BeginPlay()
 	StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 	LocallyControlled = IsLocallyControlled();
 
-    auto GS{ Cast<UAsylumInstance>(GetWorld()->GetGameInstance()) };
+	FTimerHandle Wait;
+	GetWorldTimerManager().SetTimer(Wait, this, &ThisClass::DelayStart, 1.f);
+ 
+}
 
-	
 
-    if (IsLocallyControlled())
-	   {
-		   // case 1  Locally controlled Client
-		   if (!HasAuthority())  // in this case I will change immediately my gfx then ask the server to do the same
-		   {
-			   SetCharType(GS->SelectedCharacter);
+void ABaseChar::DelayStart() {
 
-			   Begin_Server(GS->SelectedCharacter); // call a  function to set up gfx on the server 
-			//   GetMesh()->SetSkeletalMesh(CharMeshes);
-			 //  GetMesh()->SetAnimClass(AnimBP);
-			   SelectedMesh = GS->SelectedCharacter;
-		   }
-		   else	  
-		   {  
-			   SetCharType(GS->SelectedCharacter);
-			 //  GetMesh()->SetSkeletalMesh(CharMeshes);
-			//   GetMesh()->SetAnimClass(AnimBP);
-			   SelectedMesh = GS->SelectedCharacter;
-		   }
-	   }	
-	
+	if (LocallyControlled) // sono il tizio che ha selezionato il personaggio
+	{
+		auto GS{ Cast<UAsylumInstance>(GetWorld()->GetGameInstance()) };
+		Begin_Server(GS->SelectedCharacter); // call a  function to set up gfx on the server 
+		SelectedMesh = GS->SelectedCharacter;
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(1, -1, FColor::Cyan, TEXT("Sonoremoto"));
+
+	}
+
 }
 
 
@@ -205,7 +202,7 @@ void ABaseChar::Begin_Server_Implementation(uint8 Selected)
 	//GetMesh()->SetSkeletalMesh(CharMeshes);	
 	//GetMesh()->SetAnimClass(AnimBP);
 	//Begin_Multicast(Selected);  
-	SelectedMesh = Selected;
+	//SelectedMesh = Selected;
 	//if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Blue, FString::Printf(TEXT("Change on server I %i"), Selected));
 }
 
@@ -219,15 +216,6 @@ void ABaseChar::AddContext(UInputMappingContext* MC, int32 priority)
 	auto Sub = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
 	if (!Sub) return;
 	Sub->AddMappingContext(MC, priority);
-}
-
-void ABaseChar::OnRep_ChangeMesh()
-{
-
-//	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, FString::Printf(TEXT("On Replication %i"), SelectedMesh));
-
-	SetCharType(SelectedMesh);
-	//GetMesh()->SetSkeletalMesh(CharMeshes);
 }
 
 
@@ -265,6 +253,7 @@ void ABaseChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EPI->BindAction(InputActions[2], ETriggerEvent::Started, this, &ThisClass::CrouchBP);
 	//	Jump
 	EPI->BindAction(InputActions[3], ETriggerEvent::Started, this, &ThisClass::JumpIA);
+
 	EPI->BindAction(InputActions[3], ETriggerEvent::Completed, this, &ThisClass::JumpIA);
 	//	Look
 	EPI->BindAction(InputActions[4], ETriggerEvent::Triggered, this, &ThisClass::Look);
@@ -754,8 +743,9 @@ void ABaseChar::TraceForWeapon()
 	FHitResult MyHit;
 	bool hit = ItemTrace(MyHit);	// la funzione se trova un hit restituisce true e dentro la variabile passata per riferimento trovo i dati
 	//UE_LOG(LogTemp, Error, TEXT("Ciao sono %s"), *GetName());
-	if (hit)
+	if (hit && MyHit.GetActor())
 	{
+
 		LastDoorComp = MyHit.GetActor()->FindComponentByClass<UDoor>();
 
 		if (LastDoorComp)
@@ -858,26 +848,7 @@ void ABaseChar::MultiInteract_Implementation()
 	}
 }
 
-void ABaseChar::OnRep_Damage(float PrevDamage)
-{
-	GetCombat()->Actual_Hp -= Damage;
-	//UE_LOG(LogTemp, Warning, TEXT("On Rep Damage"));
 
-	/*
-	auto MyAnim = GetMesh()->GetAnimInstance();
-
-	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("Ricevo danni"));
-
-	MyAnim->Montage_Play(HitReact);
-	switch (FMath::RandRange(1, 4))
-	{
-	case 1:	MyAnim->Montage_JumpToSection("Primo"); break;
-	case 2:	MyAnim->Montage_JumpToSection("Secondo"); break;
-	case 3:	MyAnim->Montage_JumpToSection("Terzo"); break;
-	case 4:	MyAnim->Montage_JumpToSection("Quarto"); break;
-	}
-	*/
-}
 
 // on rep viene eseguito su tutti i client ma non sul server
 void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)

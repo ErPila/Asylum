@@ -20,13 +20,33 @@ void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
 {
 	Actual_Hp -= Damage;
 
-	
-	
-
 	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("Ricevo danni"));
 
+	
+	if (!Character->HitReact)
+	{
+		if (GetOwner()->HasAuthority())	GEngine->AddOnScreenDebugMessage(4, 10.f, FColor::Blue, FString("Manca Hit Server"));
+		else
+		{
+			if (Cast<APawn>(GetOwner())->IsLocallyControlled())
+			{
+				GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Green, FString("Manca Hit Local Client"));
+
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(3, 10.f, FColor::Yellow, FString("Manca Hit Remote Client"));
+			}
+
+
+		}
+	
+	}
+
 	auto MyAnim = Character->GetMesh()->GetAnimInstance();
+
 	MyAnim->Montage_Play(Character->HitReact);
+
 	switch (FMath::RandRange(1, 4))
 	{
 	case 1:	MyAnim->Montage_JumpToSection("Primo"); break;

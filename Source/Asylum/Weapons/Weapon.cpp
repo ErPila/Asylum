@@ -110,35 +110,32 @@ void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bCanAttack)
+	if (bCanAttack  && HasAuthority())
 	{
-		if(HasAuthority())
-		{
 			ExecuteAttack();
-		}
 	}
 }
 
 void AWeapon::ExecuteAttack()
 {
-
+	// quando il timer è attivo (sono in rimozione della trappola) esco immediatamente per non fare altri danni
 	if (GetWorldTimerManager().IsTimerActive(TimeToDestroy)) return;
 
 	FHitResult Hit;
-	FTransform StartTrace = WeaponMesh->GetSocketTransform(FName("DamageStartSocket"), RTS_World);
-	FTransform EndTrace = WeaponMesh->GetSocketTransform(FName("DamageEndSocket"), RTS_World);
+	FVector  StartTrace = WeaponMesh->GetSocketLocation(FName("DamageStartSocket"));
+	FVector   EndTrace  = WeaponMesh->GetSocketLocation(FName("DamageEndSocket"));
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 	bool Found = false;
-	TArray<FHitResult> Colpiti;
+	TArray<FHitResult> Colpiti; // Tarray di hit results, nel caso di armi che possano colpire più elementi
 
 	switch (WeaponType)
 	{
 	case EWeaponType::EWT_Gun:
 		
-		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
-		SpawnSoundParticle(StartTrace.GetLocation(), FireParticle, nullptr);
+		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace, EndTrace, FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
+		SpawnSoundParticle(StartTrace, FireParticle, nullptr);
 
 		break;
 	case EWeaponType::EWT_Club:
@@ -148,7 +145,7 @@ void AWeapon::ExecuteAttack()
 	case EWeaponType::EWT_Scissors:
 	case EWeaponType::EWT_Syringe:
 
-		Found = GetWorld()->LineTraceSingleByChannel(Hit, StartTrace.GetLocation(), EndTrace.GetLocation(), ECC_Visibility, Params);
+		Found = GetWorld()->LineTraceSingleByChannel(Hit, StartTrace, EndTrace, ECC_Visibility, Params);
 
 		break;
 	case EWeaponType::EWT_Bomb:
@@ -202,7 +199,10 @@ void AWeapon::ExecuteAttack()
 		break;
 	}
 
+	if (!Found) return;
+
 	auto Player = Cast<ABaseChar>(Hit.GetActor());
+
 	if (Player)
 	{
 		// se colpisco un character imposto il bcanattack a false 
@@ -212,31 +212,30 @@ void AWeapon::ExecuteAttack()
 
 		if (WeaponType == EWeaponType::EWT_Trap)
 		{
-			Player->DisattivaMovimenti();
+			//Player->DisattivaMovimenti();
 			GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
 			if (Animation) WeaponMesh->PlayAnimation(Animation, false);
 		}
-		else
-		{
-			auto MyPlayer = Cast<ABaseChar>(GetOwner());
-			if(MyPlayer) MyPlayer->DisattivaMovimenti();
-		}
-		
-		if (WeaponType == EWeaponType::EWT_Bomb)
+		else if (WeaponType == EWeaponType::EWT_Bomb)
 		{
 			GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
 			SpawnSoundParticle(Hit.Location, FireParticle, UseSound);
 		}
-		
+		else
+     	{
+			//auto MyPlayer = Cast<ABaseChar>(GetOwner());
+		//	if(MyPlayer) MyPlayer->DisattivaMovimenti();
+		}
+			
 
 		// se ho inserito il sistema particellari lo spawno sul punto di impatto
 		SpawnSoundParticle(Hit.Location, HitBodyParticle, HitBodySound);
 
-		//UE_LOG(LogTemp, Error, TEXT("Colpito"));
-		//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
+	
+		DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
 		// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
-		Player->Damage = Damage;
+		//Player->Damage = Damage;
 
 		// funzione per applicare il danno se siamo il server
 		Player->GetCombat()->ReceiveDamage(Damage);
@@ -244,12 +243,11 @@ void AWeapon::ExecuteAttack()
 	}
 	else if (!bSoundDone)
 	{
-		if (Found)
-		{
+		
 			SpawnSoundParticle(Hit.Location, HitSurfaceParticle, HitSurfaceSound);
 			//bCanAttack = false;
 			bSoundDone = true;
-		}	
+		
 	}
 
 	
