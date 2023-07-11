@@ -15,6 +15,8 @@ UDoor::UDoor()
 	//PrimaryComponentTick.bTickEvenWhenPaused = true;
 	//PrimaryComponentTick.TickGroup = TG_PrePhysics;
 	// ...
+
+
 }
 
 void UDoor::OpenDoor()

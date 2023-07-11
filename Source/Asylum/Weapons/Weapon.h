@@ -181,7 +181,8 @@ private:
 	void SpawnSoundParticle(FVector Position, const TArray<UNiagaraSystem*> &Particle, USoundCue* Sound = nullptr);
 
 
-	
+	FVector LastStart{ FVector(0) };
+	FVector LastEnd{ FVector(0) };
 
 public:	
 
@@ -251,7 +252,7 @@ public:
 	UFUNCTION()
 	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-public:	
+
 	// Called every frame
 
 	virtual void BeginPlay() override;

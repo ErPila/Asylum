@@ -22,7 +22,7 @@ void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
 
 	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("Ricevo danni"));
 
-	
+	/*
 	if (!Character->HitReact)
 	{
 		if (GetOwner()->HasAuthority())	GEngine->AddOnScreenDebugMessage(4, 10.f, FColor::Blue, FString("Manca Hit Server"));
@@ -41,11 +41,11 @@ void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
 
 		}
 	
-	}
+	}*/
 
 	auto MyAnim = Character->GetMesh()->GetAnimInstance();
 
-	MyAnim->Montage_Play(Character->HitReact);
+	MyAnim->Montage_Play(Character->HitReact[Character->SelectedMesh]);
 
 	switch (FMath::RandRange(1, 4))
 	{

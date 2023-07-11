@@ -91,7 +91,7 @@ void ABaseChar::SetCharType_Implementation(uint8 Selected)
 			TorciaScaleOffset = TypeRow->DTScaleOffset;
 			LuceLocationOffset = TypeRow->DTLuceLocationOffset;
 			LuceRotationOffset = TypeRow->DTLuceRotationOffset;
-			HitReact = TypeRow->DTHitReact;
+			//HitReact = TypeRow->DTHitReact;
 			
 
 			GetMesh()->SetSkeletalMesh(CharMeshes);

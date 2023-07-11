@@ -80,6 +80,8 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;	// setta che questa classe deve essere replicata
 
+	SetReplicateMovement(true);
+
 	RootSphere = CreateDefaultSubobject<USphereComponent>(TEXT("RootSphere"));
 	SetRootComponent(RootSphere);
 
@@ -110,10 +112,25 @@ void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bCanAttack  && HasAuthority())
+	if (HasAuthority())
 	{
+		if (bCanAttack)
+		{
 			ExecuteAttack();
+		}
+		else
+		{
+			LastStart = GetActorLocation();
+			LastEnd   = GetActorLocation();
+
+		}
+
+	
+
 	}
+
+
+
 }
 
 void AWeapon::ExecuteAttack()
@@ -146,6 +163,11 @@ void AWeapon::ExecuteAttack()
 	case EWeaponType::EWT_Syringe:
 
 		Found = GetWorld()->LineTraceSingleByChannel(Hit, StartTrace, EndTrace, ECC_Visibility, Params);
+		if (!Found) Found = GetWorld()->LineTraceSingleByChannel(Hit, LastStart, EndTrace, ECC_Visibility, Params);
+		if (!Found) Found = GetWorld()->LineTraceSingleByChannel(Hit, StartTrace, LastEnd, ECC_Visibility, Params);
+
+		LastStart = StartTrace;
+		LastEnd   = EndTrace;
 
 		break;
 	case EWeaponType::EWT_Bomb:

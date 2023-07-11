@@ -86,10 +86,11 @@ struct FCharTable : public FTableRowBase
 		FRotator(0)
 	};
 
+	/*
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		UAnimMontage* DTHitReact {
 		nullptr
-	};
+	};*/
 	
 };
 
@@ -186,8 +187,8 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Torcia", meta = (AllowPrivateAccess = "true"))
 	FRotator LuceRotationOffset;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* HitReact;
+	//UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+//	UAnimMontage* HitReact;
 
 	
 	
@@ -203,6 +204,9 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	TArray<UAnimMontage*> InteractMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	TArray<UAnimMontage*> HitReact;
 
 	// Yaw e Pitch da passare all'anim instance
 	float AO_Yaw;
