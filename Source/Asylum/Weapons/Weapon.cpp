@@ -234,7 +234,7 @@ void AWeapon::ExecuteAttack()
 
 		if (WeaponType == EWeaponType::EWT_Trap)
 		{
-			//Player->DisattivaMovimenti();
+			Player->DisattivaMovimenti();
 			GetWorldTimerManager().SetTimer(TimeToDestroy, this, &AWeapon::DestroyTimer, 1.f);
 			if (Animation) WeaponMesh->PlayAnimation(Animation, false);
 		}

@@ -8,7 +8,10 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SphereComponent.h"
-
+#include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Asylum/Modes/FightMode.h"
 
 
 void UCombat::ReceiveDamage(float Damage)
@@ -20,28 +23,7 @@ void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
 {
 	Actual_Hp -= Damage;
 
-	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("Ricevo danni"));
-
-	/*
-	if (!Character->HitReact)
-	{
-		if (GetOwner()->HasAuthority())	GEngine->AddOnScreenDebugMessage(4, 10.f, FColor::Blue, FString("Manca Hit Server"));
-		else
-		{
-			if (Cast<APawn>(GetOwner())->IsLocallyControlled())
-			{
-				GEngine->AddOnScreenDebugMessage(2, 10.f, FColor::Green, FString("Manca Hit Local Client"));
-
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(3, 10.f, FColor::Yellow, FString("Manca Hit Remote Client"));
-			}
-
-
-		}
-	
-	}*/
+	//GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Red, FString("Ricevo danni"));
 
 	auto MyAnim = Character->GetMesh()->GetAnimInstance();
 
@@ -106,6 +88,13 @@ void UCombat::SetWeaponStateServer_Implementation(EWeaponState NewState, AWeapon
 void UCombat::Die_Server_Implementation()
 {
 	Die_Multicast();
+
+	auto GM = Cast<AFightMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GM)
+	{
+		GM->EndGame();
+	}
+	
 }
 
 void UCombat::Die_Multicast_Implementation()
@@ -113,6 +102,8 @@ void UCombat::Die_Multicast_Implementation()
 	Character->GetMesh()->SetSimulatePhysics(true);
 	Character->GetMesh()->SetCollisionProfileName("Ragdoll");
 	Character->GetCharacterMovement()->DisableMovement();
+	//Character->GetCapsuleComponent()->DestroyComponent();
+
 }
 
 // Called when the game starts
@@ -121,12 +112,6 @@ void UCombat::BeginPlay()
 	Super::BeginPlay();
 	Actual_Hp     = Max_Hp;
 	Actual_Sanity = Max_Sanity;
-
-	
-
-// tre slot per il backpack
-//	auto HandSocket = Character->GetMesh()->GetSocketByName("Grip_r");
-//	BackupLocation =  HandSocket->RelativeLocation;
 
 }
 
@@ -147,7 +132,8 @@ void UCombat::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 
 	if (Actual_Hp <= 0)
 	{
-		Die_Server();
+		Die_Server();	
+		Win = false;
 	}
 }
 

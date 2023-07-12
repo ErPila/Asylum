@@ -63,6 +63,9 @@ class ASYLUM_API UCombat : public UActorComponent
 
 public:	
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool Win { true };
+
 	UFUNCTION(BlueprintCallable)
 	void ReceiveDamage(float Damage);
 

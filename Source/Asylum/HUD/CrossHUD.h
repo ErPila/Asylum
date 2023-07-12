@@ -35,7 +35,7 @@ protected:
         FVector2D ScreenCenter;
 
     UPROPERTY(EditAnywhere, Category = "HUD")
-        float Offset{ 32.f };
+        float Offset{ 1.f };
 
     UPROPERTY(EditAnywhere, Category = "HUD")
         float MaxSpread{ 32.f };

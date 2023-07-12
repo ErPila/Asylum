@@ -4,6 +4,8 @@
 #include "CrossHUD.h"
 #include "Asylum/Characters/BaseChar.h"
 #include "Engine/Canvas.h"
+#include "Asylum/Enum/WeaponType.h"
+#include "Asylum/Weapons/Weapon.h"
 
 void ACrossHUD::DrawHUD()
 {
@@ -15,7 +17,8 @@ void ACrossHUD::DrawHUD()
 
 	auto myChar = Cast<ABaseChar>(GetOwningPawn());
 
-	if (myChar && myChar->GetEquippedWeapon())
+	
+	if (myChar && myChar->GetEquippedWeapon() && myChar->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_Gun)
 	{
 		float Spread = Offset;
 
@@ -24,4 +27,5 @@ void ACrossHUD::DrawHUD()
 		DrawTexture(CrosshairTop, ScreenCenter.X, ScreenCenter.Y - Spread, 64, 64, 0, 0, 1, 1);
 		DrawTexture(CrosshairBottom, ScreenCenter.X, ScreenCenter.Y + Spread, 64, 64, 0, 0, 1, 1);
 	}
+	
 }

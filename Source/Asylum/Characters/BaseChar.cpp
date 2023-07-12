@@ -130,7 +130,7 @@ ABaseChar::ABaseChar():
 
 	DebugWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
 	DebugWidget->SetupAttachment(RootComponent);
-
+	
 	
 }
 
