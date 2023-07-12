@@ -16,6 +16,7 @@ class ASYLUM_API UAsylumInstance : public UGameInstance
 	
 public:
 
+	UPROPERTY(BlueprintReadOnly)
 	uint8 SelectedCharacter{ 0 };
 
 };

@@ -433,6 +433,7 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 		ShowWidget(false);
 		CollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetVisibility(true);
+		if (SecondaryMesh) SecondaryMesh->SetVisibility(true);
 		RootSphere->SetSimulatePhysics(false);
 
 		//if (!HasAuthority()) UE_LOG(LogTemp, Warning, TEXT("cambio client"))
@@ -481,6 +482,7 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponMesh->SetVisibility(false);
+		if(SecondaryMesh) SecondaryMesh->SetVisibility(false);
 
 		RootSphere->SetSimulatePhysics(false);
 		RootSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);

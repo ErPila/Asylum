@@ -16,9 +16,13 @@ class ASYLUM_API UWaiting : public UUserWidget
 
 
 public:
+	virtual bool Initialize() override;
 
     UPROPERTY(meta = (BindWidget))
-		UButton* Test;
+	UButton* BackButton;
+
+	UFUNCTION()
+	void Back();
 
 	UFUNCTION(BlueprintCallable)
 		void MenuSetup();
@@ -26,5 +30,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void MenuEnd();
 
+	bool PrevMenu{ false };
 
 };

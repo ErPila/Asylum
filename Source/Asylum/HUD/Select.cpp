@@ -79,7 +79,6 @@ void USelect::StartPressed()
 		}
 	}
 
-
 	UGameplayStatics::OpenLevel(this, FName("HostJoin"));
 }
 

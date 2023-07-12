@@ -7,6 +7,16 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
+bool UWaiting::Initialize()
+{
+	if (!Super::Initialize()) return false;
+	// bind all the available buttons.  now those buttons will be activated by buttons
+	// with the same name from blueprints
+		BackButton->OnClicked.AddDynamic(this, &ThisClass::Back);
+
+		return true;
+}
+
 void UWaiting::MenuSetup()
 {
 	AddToViewport();
@@ -38,24 +48,30 @@ void UWaiting::MenuSetup()
 	// qui da selectedCharacter possiamo far apparire il personaggio giusto nel loading
 
 }
+void UWaiting::Back()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), "HostJoin");
+	PrevMenu = true;
+}
 
 void UWaiting::MenuEnd()
 {
 
-
 	RemoveFromParent();
 
-	UWorld* World = GetWorld();
-
-	if (World)
+	if(!PrevMenu)
 	{
-		APlayerController* PC = World->GetFirstPlayerController();
-		if (PC)
+		UWorld* World = GetWorld();
+		if (World)
 		{
-			// game only, focus on the game !
-			FInputModeGameOnly InputModeData;
-			PC->SetInputMode(InputModeData); // now imput mode for this PC is defined 
-			PC->SetShowMouseCursor(false);  //mouse cursor disappear
+			APlayerController* PC = World->GetFirstPlayerController();
+			if (PC)
+			{
+				// game only, focus on the game !
+				FInputModeGameOnly InputModeData;
+				PC->SetInputMode(InputModeData); // now imput mode for this PC is defined 
+				PC->SetShowMouseCursor(false);  //mouse cursor disappear
+			}
 		}
 	}
 
