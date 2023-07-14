@@ -122,11 +122,7 @@ void AWeapon::Tick(float DeltaTime)
 		{
 			LastStart = GetActorLocation();
 			LastEnd   = GetActorLocation();
-
 		}
-
-	
-
 	}
 
 
