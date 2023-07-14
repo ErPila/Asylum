@@ -14,6 +14,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UWidgetComponent;
+class UUserWidget;
 class AWeapon;
 
 USTRUCT(BlueprintType)
@@ -238,11 +239,18 @@ class ASYLUM_API ABaseChar : public ACharacter
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiInteract();
 
-	
-
 public:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool Win{ true };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	class UUserWidget* EndGameWidget;
+
 	float ThrowIntensity{ 0.f };
+
+	UFUNCTION(NetMulticast, Reliable)
+	void AddEndWidget();
 
 	FORCEINLINE uint8 GetSelectedMesh() { return SelectedMesh; }
 
@@ -254,6 +262,8 @@ public:
 	
 	//UFUNCTION()
 	//void OnRep_Damage(float PrevDamage);
+
+	void ReturnHomeLevel();
 
 	UFUNCTION()
 	void OnRep_EquipWeapon(AWeapon* EW);

@@ -14,15 +14,21 @@ class ASYLUM_API AFightMode : public AGameMode
 {
 	GENERATED_BODY()
 
-		void BeginPlay() override;
+	void BeginPlay() override;
 
-	TSubclassOf<class ABaseChar> Char;
-	TArray<AActor*> Players;
+	FTimerHandle CheckHealth;
 
 public:
 
-		UFUNCTION(BlueprintImplementableEvent)
-		void EndGame();
+
+	// Array inizializzato da blueprint nel beginplay, all'interno ci sono tutti i giocatori in partita
+	UPROPERTY(BlueprintReadWrite, Category = "Giocatori")
+	TArray<AActor*> Players;
+
+	
+	void EndGame();
+
+	void AddWidget();
 
 	
 };

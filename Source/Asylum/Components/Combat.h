@@ -59,12 +59,9 @@ class ASYLUM_API UCombat : public UActorComponent
 
 	ABaseChar* MyChar{ nullptr };
 
-	
-
 public:	
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool Win { true };
+	
 
 	UFUNCTION(BlueprintCallable)
 	void ReceiveDamage(float Damage);
@@ -123,9 +120,6 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void SetWeaponStateServer(EWeaponState NewState,AWeapon* ActualW);
-
-	UFUNCTION(Server, Reliable)
-	void Die_Server();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Die_Multicast();

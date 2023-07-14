@@ -85,25 +85,15 @@ void UCombat::SetWeaponStateServer_Implementation(EWeaponState NewState, AWeapon
 	ActualW->SetWeaponState(NewState);
 }
 
-void UCombat::Die_Server_Implementation()
-{
-	Die_Multicast();
-
-	auto GM = Cast<AFightMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GM)
-	{
-		GM->EndGame();
-	}
-	
-}
-
 void UCombat::Die_Multicast_Implementation()
 {
+	// attivo fisica e imposto la modalità ragdoll alla mesh
 	Character->GetMesh()->SetSimulatePhysics(true);
 	Character->GetMesh()->SetCollisionProfileName("Ragdoll");
-	Character->GetCharacterMovement()->DisableMovement();
-	//Character->GetCapsuleComponent()->DestroyComponent();
-
+	//setto sul client che il giocatore ha perso
+	Character->Win = false;
+	//distruggo la capsula per non fare collisioni con la mesh e buggare tutto
+	Character->GetCapsuleComponent()->DestroyComponent();
 }
 
 // Called when the game starts
@@ -128,12 +118,6 @@ void UCombat::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 	else
 	{
 		Actual_Hp -= 0.5 * DeltaTime;
-	}
-
-	if (Actual_Hp <= 0)
-	{
-		Die_Server();	
-		Win = false;
 	}
 }
 

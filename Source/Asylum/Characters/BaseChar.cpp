@@ -15,6 +15,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
 #include "Asylum/Components/Combat.h"
 #include "Asylum/Components/Door.h"
@@ -850,6 +851,23 @@ void ABaseChar::MultiInteract_Implementation()
 
 
 
+void ABaseChar::AddEndWidget_Implementation()
+{
+	if (LocallyControlled)
+	{
+		GetCharacterMovement()->DisableMovement();
+		DisableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		EndGameWidget->AddToViewport();
+
+		FTimerHandle TimerToHomeLevel;
+		GetWorldTimerManager().SetTimer(TimerToHomeLevel, this, &ABaseChar::ReturnHomeLevel, 5.f);
+	}
+}
+	
+void ABaseChar::ReturnHomeLevel()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName("SelectMap"));
+}
 // on rep viene eseguito su tutti i client ma non sul server
 void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
 {
@@ -873,8 +891,6 @@ void ABaseChar::OnRep_EquipWeapon(AWeapon* EW)
 			{
 				EW->GetRootSphere()->AddImpulse(GetActorForwardVector() * ThrowIntensity * EW->GetRootSphere()->GetMass());
 			}
-			
-
 		}
 	}
 }
