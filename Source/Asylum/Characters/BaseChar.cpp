@@ -28,13 +28,14 @@
 // debug
 #include "DrawDebugHelpers.h"
 
+#define PRINT_VAR(text,time,var,color) GEngine->AddOnScreenDebugMessage(-1, time, color,FString::Printf(TEXT(text), var));
 
 
 
 void ABaseChar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	//DOREPLIFETIME(ThisClass, SelectedMesh); // replica sempre la variabile
+	DOREPLIFETIME(ThisClass, SelectedMesh); // replica sempre la variabile
 	DOREPLIFETIME(ThisClass, EquippedWeapon);
 	//DOREPLIFETIME(ThisClass, TracedWeapon);
 //	DOREPLIFETIME_CONDITION(ThisClass, SelectedMesh, COND_OwnerOnly); // replica sempre la variabile
@@ -175,7 +176,7 @@ void ABaseChar::BeginPlay()
 	LocallyControlled = IsLocallyControlled();
 
 	FTimerHandle Wait;
-	GetWorldTimerManager().SetTimer(Wait, this, &ThisClass::DelayStart, 1.f);
+	GetWorldTimerManager().SetTimer(Wait, this, &ThisClass::DelayStart, 0.2f);
  
 }
 
@@ -191,14 +192,22 @@ void ABaseChar::DelayStart() {
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(1, -1, FColor::Cyan, TEXT("Sonoremoto"));
-
+		FTimerHandle Wait;
+		GetWorldTimerManager().SetTimer(Wait, this, &ThisClass::BeginRemote, 0.3f);
 	}
+
+}
+
+void ABaseChar::BeginRemote()
+{
+	SetCharType(SelectedMesh);
 
 }
 
 
 void ABaseChar::Begin_Server_Implementation(uint8 Selected)
 {
+	SelectedMesh = Selected;
 	SetCharType(Selected);
 	//GetMesh()->SetSkeletalMesh(CharMeshes);	
 	//GetMesh()->SetAnimClass(AnimBP);

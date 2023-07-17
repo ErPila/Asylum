@@ -14,6 +14,8 @@
 #include "Asylum/Modes/FightMode.h"
 
 
+#define PRINT_VAR(text,time,var,color) GEngine->AddOnScreenDebugMessage(-1, time, color,FString::Printf(TEXT(text), var));
+
 void UCombat::ReceiveDamage(float Damage)
 {
 	ReceiveDamage_Multicast(Damage);
@@ -27,6 +29,24 @@ void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
 
 	auto MyAnim = Character->GetMesh()->GetAnimInstance();
 
+	/*if (Character->HasAuthority())
+	{	
+	PRINT_VAR("Selected Server %i", 15.f, Character->SelectedMesh, FColor::Red);
+	}
+	else
+	{
+	PRINT_VAR("Selected Client %i", 15.f, Character->SelectedMesh, FColor::Blue);
+	}
+	
+	if (Character->HasAuthority())
+	{
+		PRINT_VAR("Number Server %i", 15.f, Character->HitReact.Num(), FColor::Red);
+	}
+	else
+	{
+		PRINT_VAR("Number Client %i", 15.f, Character->HitReact.Num(), FColor::Blue);
+	}
+	*/
 	MyAnim->Montage_Play(Character->HitReact[Character->SelectedMesh]);
 
 	switch (FMath::RandRange(1, 4))

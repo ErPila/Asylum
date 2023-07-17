@@ -149,7 +149,11 @@ void AWeapon::ExecuteAttack()
 		
 		Found = GetWorld()->SweepSingleByChannel(Hit, StartTrace, EndTrace, FQuat{ 0 }, ECC_Visibility, FCollisionShape::MakeSphere(20.f), Params);
 		SpawnSoundParticle(StartTrace, FireParticle, nullptr);
+		if (!Found) Found = GetWorld()->LineTraceSingleByChannel(Hit, LastStart, EndTrace, ECC_Visibility, Params);
+		if (!Found) Found = GetWorld()->LineTraceSingleByChannel(Hit, StartTrace, LastEnd, ECC_Visibility, Params);
 
+		LastStart = StartTrace;
+		LastEnd = EndTrace;
 		break;
 	case EWeaponType::EWT_Club:
 	case EWeaponType::EWT_Axe:
@@ -250,7 +254,7 @@ void AWeapon::ExecuteAttack()
 		SpawnSoundParticle(Hit.Location, HitBodyParticle, HitBodySound);
 
 	
-		DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
+		//DrawDebugSphere(GetWorld(), Hit.Location, 5.f, 8, FColor::Green, false, 5.f);
 
 		// damage del player on rep, ad ogni cambio applica il danno e lo replica sui client
 		//Player->Damage = Damage;

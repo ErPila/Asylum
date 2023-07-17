@@ -125,7 +125,8 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 	// variabile replicata legata ad una funzione
 	// ogni volta che tale variabile cambia di valore la funzione relativa viene eseguita
-	//UPROPERTY(ReplicatedUsing = OnRep_ChangeMesh)
+
+	UPROPERTY(Replicated)//Using = OnRep_ChangeMesh)
 	uint8 SelectedMesh { 0 };
 
 	//UFUNCTION()
@@ -320,6 +321,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	void DelayStart();
+
+	void BeginRemote();
 
 	UFUNCTION(Server, Reliable)  // we use this function in order to setup player mesh on the server
 	void Begin_Server(uint8 Selected);
