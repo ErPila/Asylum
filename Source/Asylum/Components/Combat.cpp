@@ -21,6 +21,21 @@ void UCombat::ReceiveDamage(float Damage)
 	ReceiveDamage_Multicast(Damage);
 }
 
+void UCombat::ScaleHp_Multicast_Implementation(uint8 Damage)
+{
+	//Actual_Hp -= Damage;
+
+	if (Damage >100)
+	{
+		if (!Character->HasAuthority())Actual_Sanity -= 2;
+	}
+	else
+	{
+		if (!Character->HasAuthority())Actual_Hp -= 4;
+	}
+
+}
+
 void UCombat::ReceiveDamage_Multicast_Implementation(float Damage)
 {
 	Actual_Hp -= Damage;
@@ -96,6 +111,9 @@ Actual_Sanity(Max_Sanity)
 	//bReplicatesComp = true;
 	//bReplicates = true;
 	PrimaryComponentTick.bCanEverTick = true;
+
+	
+
 }
 
 
@@ -122,7 +140,7 @@ void UCombat::BeginPlay()
 	Super::BeginPlay();
 	Actual_Hp     = Max_Hp;
 	Actual_Sanity = Max_Sanity;
-
+	Character     = Cast<ABaseChar>(GetOwner());
 }
 
 
@@ -131,14 +149,31 @@ void UCombat::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (Actual_Sanity > 0)
+	if (!Character) return;
+
+	if (Character->HasAuthority())
 	{
-		Actual_Sanity -= 0.5 * DeltaTime;
+		if (EveryScale > 0) EveryScale -= DeltaTime;
+		else
+		{
+
+			if (Actual_Sanity > 0)
+			{
+				ScaleHp_Multicast(150);
+				Actual_Sanity -= 2;
+			}
+			else
+			{
+				ScaleHp_Multicast(50);
+				Actual_Hp -= 4;
+			}
+
+
+			EveryScale = 2.f;
+		}
 	}
-	else
-	{
-		Actual_Hp -= 0.5 * DeltaTime;
-	}
+
+
 }
 
 void UCombat::EquipWeapon(AWeapon* WeaponToEquip)

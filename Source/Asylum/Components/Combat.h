@@ -69,6 +69,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void ReceiveDamage_Multicast(float Damage);
 
+	UFUNCTION(NetMulticast, Reliable)  // damage over  100 is for the sanity
+	void ScaleHp_Multicast(uint8 Damage);
+
+	float EveryScale{ 1.5f };
+
+
 	FORCEINLINE float GetStandWalkSpeed() { return StandWalkSpeed; };
 	FORCEINLINE float GetCrouchWalkSpeed() { return CrouchWalkSpeed; };
 
