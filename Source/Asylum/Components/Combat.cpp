@@ -25,7 +25,7 @@ void UCombat::ScaleHp_Multicast_Implementation(uint8 Damage)
 {
 	//Actual_Hp -= Damage;
 
-	if (Damage >100)
+	if (Damage > 100)
 	{
 		if (!Character->HasAuthority())Actual_Sanity -= 2;
 	}

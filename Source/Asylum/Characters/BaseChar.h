@@ -141,6 +141,13 @@ class ASYLUM_API ABaseChar : public ACharacter
 
 	UFUNCTION(BlueprintCallable,Category = "Sanity")
 	void CollectPills();
+
+	UFUNCTION(Server, Reliable)
+	void CollectPills_Server();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void CollectPills_Multicast();
+
 	//UFUNCTION()
 	//void OnRep_TracedWeapon(AWeapon* PrevTracedWeapon);
 

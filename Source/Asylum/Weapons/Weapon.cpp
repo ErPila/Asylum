@@ -66,7 +66,6 @@ void AWeapon::SetWeaponType(uint8 RandMax, bool SelectWeapon, EWeaponType Tipo)
 			WeaponType = EWeaponType::EWT_Bomb;
 			break;
 
-
 		}
 	}
 
@@ -108,6 +107,7 @@ AWeapon::AWeapon()
 	PickupWidget->SetupAttachment(RootComponent);
 
 }
+
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -124,9 +124,6 @@ void AWeapon::Tick(float DeltaTime)
 			LastEnd   = GetActorLocation();
 		}
 	}
-
-
-
 }
 
 void AWeapon::ExecuteAttack()
@@ -488,7 +485,6 @@ void AWeapon::SetWeaponState(EWeaponState NewState)
 		RootSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		break;
-
 
 	}
 }

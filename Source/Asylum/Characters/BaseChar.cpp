@@ -228,9 +228,30 @@ void ABaseChar::AddContext(UInputMappingContext* MC, int32 priority)
 	Sub->AddMappingContext(MC, priority);
 }
 
-
-
 void ABaseChar::CollectPills()
+{
+	CollectPills_Server();
+}
+
+void ABaseChar::CollectPills_Server_Implementation()
+{
+
+	CollectPills_Multicast();
+		/*
+		if (CombatComponent)
+		{
+			CombatComponent->Actual_Sanity += 15;
+			CollectPills_Multicast();
+
+			if (CombatComponent->Actual_Sanity > CombatComponent->Max_Sanity)
+			{
+				CombatComponent->Actual_Sanity = CombatComponent->Max_Sanity;
+			}
+		}
+		*/
+}
+
+void ABaseChar::CollectPills_Multicast_Implementation()
 {
 	if (CombatComponent)
 	{
@@ -241,7 +262,7 @@ void ABaseChar::CollectPills()
 			CombatComponent->Actual_Sanity = CombatComponent->Max_Sanity;
 		}
 	}
-	
+
 }
 
 
